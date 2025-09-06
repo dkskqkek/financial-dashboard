@@ -1,0 +1,6 @@
+User-agent: *
+Disallow:
+
+# FinanceDash - Personal Finance Dashboard
+# This is a personal finance management tool
+Sitemap: /sitemap.xml

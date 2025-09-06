@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage 디버깅 도구</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .code-block { background: #f5f5f5; padding: 10px; border-radius: 3px; margin: 10px 0; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { background: #e9f7ef; padding: 10px; border-radius: 3px; margin: 10px 0; }
+        .error { background: #f8d7da; padding: 10px; border-radius: 3px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Financial Dashboard - LocalStorage 디버깅 도구</h1>
+    
+    <div class="debug-section">
+        <h2>📊 현재 LocalStorage 상태</h2>
+        <button onclick="checkAllStorage()">전체 스토리지 확인</button>
+        <button onclick="checkFinancialStore()">Financial Store만 확인</button>
+        <button onclick="clearStorage()">스토리지 클리어</button>
+        <div id="storage-result"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>🏷️ Zustand 스토어 키 확인</h2>
+        <p>예상되는 키: <code>financial-dashboard-store</code></p>
+        <button onclick="checkStoreKey()">스토어 키 확인</button>
+        <div id="key-result"></div>
+    </div>
+
+    <div class="debug-section">
+        <h2>📈 주식 데이터 복구 테스트</h2>
+        <button onclick="testBackupData()">백업 데이터 확인</button>
+        <button onclick="createTestData()">테스트 데이터 생성</button>
+        <div id="backup-result"></div>
+    </div>
+
+    <script>
+        function checkAllStorage() {
+            const result = document.getElementById('storage-result');
+            let html = '<div class="result"><h3>전체 LocalStorage 내용:</h3>';
+            
+            if (localStorage.length === 0) {
+                html += '<p style="color: red;">❌ LocalStorage가 비어있습니다!</p>';
+            } else {
+                html += `<p>✅ 총 ${localStorage.length}개의 키가 있습니다:</p><ul>`;
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    const value = localStorage.getItem(key);
+                    html += `<li><strong>${key}</strong>: ${value ? value.substring(0, 100) + '...' : 'null'}</li>`;
+                }
+                html += '</ul>';
+            }
+            html += '</div>';
+            result.innerHTML = html;
+        }
+
+        function checkFinancialStore() {
+            const result = document.getElementById('storage-result');
+            const storeKey = 'financial-dashboard-store';
+            const data = localStorage.getItem(storeKey);
+            
+            let html = '<div class="result"><h3>Financial Dashboard Store:</h3>';
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    html += `<p>✅ 스토어 데이터 발견!</p>`;
+                    html += `<p><strong>Stocks:</strong> ${parsed.state?.stocks ? parsed.state.stocks.length + '개' : '없음'}</p>`;
+                    html += `<p><strong>Cash Accounts:</strong> ${parsed.state?.cashAccounts ? parsed.state.cashAccounts.length + '개' : '없음'}</p>`;
+                    html += `<p><strong>사용자:</strong> ${parsed.state?.user ? parsed.state.user.name || 'Unknown' : '없음'}</p>`;
+                    html += `<div class="code-block">${JSON.stringify(parsed, null, 2).substring(0, 500)}...</div>`;
+                } catch (e) {
+                    html += `<p style="color: red;">❌ JSON 파싱 실패: ${e.message}</p>`;
+                    html += `<div class="code-block">${data.substring(0, 200)}...</div>`;
+                }
+            } else {
+                html += '<p style="color: red;">❌ Financial Dashboard 스토어 데이터가 없습니다!</p>';
+            }
+            html += '</div>';
+            result.innerHTML = html;
+        }
+
+        function checkStoreKey() {
+            const result = document.getElementById('key-result');
+            let html = '<div class="result"><h3>스토어 키 검색 결과:</h3>';
+            
+            const possibleKeys = [
+                'financial-dashboard-store',
+                'financial-store',
+                'dashboard-store',
+                'app-store'
+            ];
+            
+            let found = false;
+            for (const key of possibleKeys) {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    html += `<p>✅ 발견: <code>${key}</code></p>`;
+                    found = true;
+                } else {
+                    html += `<p>❌ 없음: <code>${key}</code></p>`;
+                }
+            }
+            
+            if (!found) {
+                html += '<p style="color: red;">⚠️ 알려진 스토어 키를 찾을 수 없습니다!</p>';
+            }
+            
+            html += '</div>';
+            result.innerHTML = html;
+        }
+
+        function clearStorage() {
+            if (confirm('정말로 LocalStorage를 모두 삭제하시겠습니까?')) {
+                localStorage.clear();
+                document.getElementById('storage-result').innerHTML = 
+                    '<div class="error">⚠️ LocalStorage가 모두 삭제되었습니다!</div>';
+            }
+        }
+
+        function testBackupData() {
+            const result = document.getElementById('backup-result');
+            
+            // 백업 키들 확인
+            const backupKeys = Object.keys(localStorage).filter(key => 
+                key.includes('backup') || key.includes('financial')
+            );
+            
+            let html = '<div class="result"><h3>백업 데이터 검색:</h3>';
+            
+            if (backupKeys.length > 0) {
+                html += '<p>✅ 백업 관련 키 발견:</p><ul>';
+                backupKeys.forEach(key => {
+                    html += `<li><strong>${key}</strong></li>`;
+                });
+                html += '</ul>';
+            } else {
+                html += '<p style="color: red;">❌ 백업 데이터를 찾을 수 없습니다!</p>';
+            }
+            
+            html += '</div>';
+            result.innerHTML = html;
+        }
+
+        function createTestData() {
+            const testData = {
+                version: 0,
+                state: {
+                    stocks: [
+                        {
+                            id: "test-1",
+                            symbol: "AAPL",
+                            name: "Apple Inc.",
+                            quantity: 10,
+                            avgPrice: 150.00,
+                            currentPrice: 175.00,
+                            marketValue: 1750.00,
+                            currency: "USD"
+                        }
+                    ],
+                    cashAccounts: [
+                        {
+                            id: "test-cash-1",
+                            name: "테스트 계좌",
+                            balance: 1000000,
+                            currency: "KRW"
+                        }
+                    ],
+                    user: {
+                        id: "test-user",
+                        name: "테스트 사용자"
+                    }
+                }
+            };
+            
+            localStorage.setItem('financial-dashboard-store', JSON.stringify(testData));
+            
+            document.getElementById('backup-result').innerHTML = 
+                '<div class="result">✅ 테스트 데이터가 생성되었습니다! 페이지를 새로고침해서 확인해보세요.</div>';
+        }
+
+        // 페이지 로드시 자동으로 상태 확인
+        window.onload = function() {
+            checkAllStorage();
+            checkFinancialStore();
+        };
+    </script>
+</body>
+</html>

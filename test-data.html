@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>로컬 스토리지 데이터 확인</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .data-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .stock-item { margin: 10px 0; padding: 10px; background-color: #f5f5f5; border-radius: 3px; }
+        .domestic-stock { background-color: #e8f5e8; border-left: 4px solid #4CAF50; }
+        .foreign-stock { background-color: #e8e8f5; border-left: 4px solid #2196F3; }
+        .etf { background-color: #fff3e0; border-left: 4px solid #ff9800; }
+        .bond { background-color: #f3e5f5; border-left: 4px solid #9c27b0; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>보유 주식 분류 확인</h1>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        // 로컬 스토리지에서 데이터 가져오기
+        const storageData = localStorage.getItem('financial-dashboard-store');
+        let data = null;
+        
+        if (storageData) {
+            try {
+                data = JSON.parse(storageData);
+                console.log('Full storage data:', data);
+            } catch (e) {
+                console.error('Error parsing storage data:', e);
+            }
+        }
+
+        // 국내주식 분류 로직 (Dashboard.tsx와 동일)
+        function classifyStock(stock) {
+            const isKoreanListed = stock.exchange === 'KRX' || /^\d{6}$/.test(stock.symbol);
+            
+            // ETF 판별
+            const isEtf = stock.name.includes('ETF') || 
+                          stock.name.includes('etf') ||
+                          stock.symbol.toUpperCase().includes('ETF') ||
+                          stock.name.includes('펀드') ||
+                          stock.name.includes('FUND');
+            
+            // 채권 판별
+            const isBond = stock.sector === '채권' ||
+                           stock.name.includes('채권') ||
+                           stock.name.includes('Bond') ||
+                           stock.name.includes('BOND') ||
+                           stock.name.includes('회사채') ||
+                           stock.name.includes('국고채') ||
+                           stock.name.includes('TIPS') ||
+                           stock.name.includes('Treasury');
+            
+            if (isBond) {
+                return 'bond';
+            } else if (isEtf) {
+                return isKoreanListed ? 'domesticEtf' : 'foreignEtf';
+            } else {
+                return isKoreanListed ? 'domesticStock' : 'foreignStock';
+            }
+        }
+
+        function displayData() {
+            const output = document.getElementById('output');
+            
+            if (!data || !data.state || !data.state.stocks) {
+                output.innerHTML = '<div class="data-section"><h2>데이터 없음</h2><p>저장된 주식 데이터가 없습니다.</p></div>';
+                return;
+            }
+
+            const stocks = data.state.stocks;
+            
+            if (stocks.length === 0) {
+                output.innerHTML = '<div class="data-section"><h2>보유 주식 없음</h2><p>등록된 주식이 없습니다.</p></div>';
+                return;
+            }
+
+            // 주식 분류
+            const domesticStocks = [];
+            const foreignStocks = [];
+            const domesticEtfs = [];
+            const foreignEtfs = [];
+            const bonds = [];
+
+            stocks.forEach(stock => {
+                const classification = classifyStock(stock);
+                switch (classification) {
+                    case 'domesticStock':
+                        domesticStocks.push(stock);
+                        break;
+                    case 'foreignStock':
+                        foreignStocks.push(stock);
+                        break;
+                    case 'domesticEtf':
+                        domesticEtfs.push(stock);
+                        break;
+                    case 'foreignEtf':
+                        foreignEtfs.push(stock);
+                        break;
+                    case 'bond':
+                        bonds.push(stock);
+                        break;
+                }
+            });
+
+            let html = `<div class="data-section">
+                <h2>전체 보유 주식: ${stocks.length}개</h2>
+            </div>`;
+
+            // 국내주식 표시
+            if (domesticStocks.length > 0) {
+                html += `<div class="data-section">
+                    <h2>🇰🇷 국내주식 (${domesticStocks.length}개)</h2>`;
+                domesticStocks.forEach(stock => {
+                    html += `<div class="stock-item domestic-stock">
+                        <strong>${stock.name} (${stock.symbol})</strong><br>
+                        거래소: ${stock.exchange || 'N/A'} | 섹터: ${stock.sector || 'N/A'} | 통화: ${stock.currency || 'N/A'}<br>
+                        보유수량: ${stock.quantity || 0}주 | 시장가치: ${(stock.marketValue || 0).toLocaleString()}원
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            // 국내 ETF 표시
+            if (domesticEtfs.length > 0) {
+                html += `<div class="data-section">
+                    <h2>📈 국내 ETF (${domesticEtfs.length}개)</h2>`;
+                domesticEtfs.forEach(stock => {
+                    html += `<div class="stock-item etf">
+                        <strong>${stock.name} (${stock.symbol})</strong><br>
+                        거래소: ${stock.exchange || 'N/A'} | 섹터: ${stock.sector || 'N/A'} | 통화: ${stock.currency || 'N/A'}<br>
+                        보유수량: ${stock.quantity || 0}주 | 시장가치: ${(stock.marketValue || 0).toLocaleString()}원
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            // 해외주식 표시
+            if (foreignStocks.length > 0) {
+                html += `<div class="data-section">
+                    <h2>🌍 해외주식 (${foreignStocks.length}개)</h2>`;
+                foreignStocks.forEach(stock => {
+                    html += `<div class="stock-item foreign-stock">
+                        <strong>${stock.name} (${stock.symbol})</strong><br>
+                        거래소: ${stock.exchange || 'N/A'} | 섹터: ${stock.sector || 'N/A'} | 통화: ${stock.currency || 'N/A'}<br>
+                        보유수량: ${stock.quantity || 0}주 | 시장가치: ${(stock.marketValue || 0).toLocaleString()}
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            // 해외 ETF 표시
+            if (foreignEtfs.length > 0) {
+                html += `<div class="data-section">
+                    <h2>🌐 해외 ETF (${foreignEtfs.length}개)</h2>`;
+                foreignEtfs.forEach(stock => {
+                    html += `<div class="stock-item etf">
+                        <strong>${stock.name} (${stock.symbol})</strong><br>
+                        거래소: ${stock.exchange || 'N/A'} | 섹터: ${stock.sector || 'N/A'} | 통화: ${stock.currency || 'N/A'}<br>
+                        보유수량: ${stock.quantity || 0}주 | 시장가치: ${(stock.marketValue || 0).toLocaleString()}
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            // 채권 표시
+            if (bonds.length > 0) {
+                html += `<div class="data-section">
+                    <h2>📋 채권 (${bonds.length}개)</h2>`;
+                bonds.forEach(stock => {
+                    html += `<div class="stock-item bond">
+                        <strong>${stock.name} (${stock.symbol})</strong><br>
+                        거래소: ${stock.exchange || 'N/A'} | 섹터: ${stock.sector || 'N/A'} | 통화: ${stock.currency || 'N/A'}<br>
+                        보유수량: ${stock.quantity || 0}주 | 시장가치: ${(stock.marketValue || 0).toLocaleString()}
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            // 분류 기준 설명
+            html += `<div class="data-section">
+                <h2>📋 분류 기준</h2>
+                <p><strong>국내주식:</strong> 거래소가 'KRX'이거나 심볼이 6자리 숫자인 종목 중, ETF와 채권이 아닌 일반 주식</p>
+                <p><strong>조건:</strong></p>
+                <ul>
+                    <li>거래소 = 'KRX' 또는 심볼이 6자리 숫자 (예: 005930)</li>
+                    <li>종목명에 "ETF", "etf", "펀드", "FUND" 포함 안됨</li>
+                    <li>섹터가 "채권"이 아니고, 종목명에 채권 관련 키워드 없음</li>
+                </ul>
+            </div>`;
+
+            // 원본 데이터도 표시
+            html += `<div class="data-section">
+                <h2>🔍 원본 데이터 (JSON)</h2>
+                <pre>${JSON.stringify(stocks, null, 2)}</pre>
+            </div>`;
+
+            output.innerHTML = html;
+        }
+
+        displayData();
+
+        // 추가 분석 스크립트 로드
+        const script = document.createElement('script');
+        script.src = './extract-domestic-stocks.js';
+        document.head.appendChild(script);
+
+        // 데이터 내보내기 버튼 추가
+        const container = document.querySelector('.container');
+        const exportDiv = document.createElement('div');
+        exportDiv.innerHTML = `
+            <div class="data-section">
+                <h2>🔧 데이터 분석 도구</h2>
+                <button onclick="runAnalysis()" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin-right: 10px; cursor: pointer;">
+                    분석 실행
+                </button>
+                <button onclick="exportToConsole()" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; margin-right: 10px; cursor: pointer;">
+                    콘솔 내보내기
+                </button>
+                <button onclick="copyToClipboard()" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                    결과 복사
+                </button>
+                <div id="analysisResult" style="margin-top: 20px;"></div>
+            </div>
+        `;
+        container.appendChild(exportDiv);
+
+        function runAnalysis() {
+            // extract-domestic-stocks.js 함수 실행
+            if (typeof extractDomesticStocks === 'function') {
+                const result = extractDomesticStocks();
+                document.getElementById('analysisResult').innerHTML = `
+                    <h3>📊 분석 결과</h3>
+                    <pre style="background: #f8f9fa; padding: 15px; border-radius: 5px; overflow-x: auto;">
+전체 보유 종목: ${result.totalStocks}개
+
+🇰🇷 국내주식: ${result.domesticStocks.length}개
+${result.domesticStocks.map((s, i) => `${i+1}. ${s.name} (${s.symbol}) - ${s.sector || 'N/A'}`).join('\n')}
+
+📈 국내 ETF: ${result.domesticEtfs.length}개  
+${result.domesticEtfs.map((s, i) => `${i+1}. ${s.name} (${s.symbol}) - ${s.sector || 'N/A'}`).join('\n')}
+
+🌍 해외주식: ${result.foreignStocks.length}개
+${result.foreignStocks.map((s, i) => `${i+1}. ${s.name} (${s.symbol}) - ${s.sector || 'N/A'}`).join('\n')}
+
+📊 해외 ETF: ${result.foreignEtfs.length}개
+${result.foreignEtfs.map((s, i) => `${i+1}. ${s.name} (${s.symbol}) - ${s.sector || 'N/A'}`).join('\n')}
+
+📋 채권: ${result.bonds.length}개
+${result.bonds.map((s, i) => `${i+1}. ${s.name} (${s.symbol}) - ${s.sector || 'N/A'}`).join('\n')}
+                    </pre>
+                `;
+            } else {
+                document.getElementById('analysisResult').innerHTML = '<p style="color: red;">분석 스크립트를 로드할 수 없습니다.</p>';
+            }
+        }
+
+        function exportToConsole() {
+            if (typeof extractDomesticStocks === 'function') {
+                console.clear();
+                extractDomesticStocks();
+            }
+        }
+
+        function copyToClipboard() {
+            const resultElement = document.getElementById('analysisResult').querySelector('pre');
+            if (resultElement) {
+                navigator.clipboard.writeText(resultElement.textContent).then(() => {
+                    alert('결과가 클립보드에 복사되었습니다!');
+                });
+            }
+        }
+    </script>
+</body>
+</html>
