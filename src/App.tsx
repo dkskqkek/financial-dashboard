@@ -11,7 +11,7 @@ import { SavingsPage } from '@/pages/SavingsPage'
 import { RealEstatePage } from '@/pages/RealEstatePage'
 import { MonthlyPage } from '@/pages/MonthlyPage'
 import { SettingsPage } from '@/pages/SettingsPage'
-import { setupAutoBackup } from '@/utils/dataBackup'
+import { setupAutoBackup, setupDailyBackupScheduler } from '@/utils/dataBackup'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,7 +24,11 @@ const queryClient = new QueryClient({
 
 function App() {
   useEffect(() => {
+    // 자동 백업 시스템 초기화
     setupAutoBackup()
+    
+    // 일일 백업 스케줄러 초기화
+    setupDailyBackupScheduler()
   }, [])
 
   return (
