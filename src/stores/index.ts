@@ -110,6 +110,9 @@ interface AppStore {
   // Currency Conversion Helpers
   convertToKrwTotal: (accounts: CashAccount[]) => Promise<number>
   convertStockValueToKrw: (stock: Stock) => Promise<number>
+  
+  // Real-time Stock Price Updates
+  updateStockPrices: (stocks: Stock[]) => Promise<void>
 }
 
 export const useAppStore = create<AppStore>()(
@@ -147,9 +150,25 @@ export const useAppStore = create<AppStore>()(
       transactions: [],
       setTransactions: (transactions) => set({ transactions }),
       addTransaction: (transaction) =>
-        set((state) => ({ 
-          transactions: [...state.transactions, transaction] 
-        })),
+        set((state) => {
+          // 계좌 잔액 자동 업데이트
+          const updatedCashAccounts = state.cashAccounts.map(account => {
+            if (account.bankName + ' - ' + account.accountType === transaction.account ||
+                account.bankName === transaction.account) {
+              return {
+                ...account,
+                balance: account.balance + transaction.amount,
+                lastTransactionDate: transaction.date
+              }
+            }
+            return account
+          })
+          
+          return {
+            transactions: [...state.transactions, transaction],
+            cashAccounts: updatedCashAccounts
+          }
+        }),
       updateTransaction: (id, updates) =>
         set((state) => ({
           transactions: state.transactions.map(transaction =>
@@ -173,9 +192,65 @@ export const useAppStore = create<AppStore>()(
           stocks: [...state.stocks, stock] 
         })),
       addStockTransaction: (transaction) =>
-        set((state) => ({
-          stockTransactions: [...state.stockTransactions, transaction]
-        })),
+        set((state) => {
+          // 기존 주식 찾기 또는 새로 추가
+          let updatedStocks = [...state.stocks]
+          const existingStockIndex = updatedStocks.findIndex(stock => stock.symbol === transaction.stockId)
+          
+          if (existingStockIndex >= 0) {
+            // 기존 주식 업데이트
+            const existingStock = updatedStocks[existingStockIndex]
+            if (transaction.type === 'buy') {
+              const totalValue = (existingStock.quantity * existingStock.averagePrice) + (transaction.quantity * transaction.price)
+              const totalQuantity = existingStock.quantity + transaction.quantity
+              updatedStocks[existingStockIndex] = {
+                ...existingStock,
+                quantity: totalQuantity,
+                averagePrice: totalValue / totalQuantity,
+                marketValue: totalQuantity * (existingStock.currentPrice || transaction.price),
+                lastUpdated: new Date().toISOString()
+              }
+            } else if (transaction.type === 'sell') {
+              const newQuantity = existingStock.quantity - transaction.quantity
+              if (newQuantity <= 0) {
+                // 모든 주식 매도 시 제거
+                updatedStocks.splice(existingStockIndex, 1)
+              } else {
+                updatedStocks[existingStockIndex] = {
+                  ...existingStock,
+                  quantity: newQuantity,
+                  marketValue: newQuantity * (existingStock.currentPrice || transaction.price),
+                  lastUpdated: new Date().toISOString()
+                }
+              }
+            }
+          } else if (transaction.type === 'buy') {
+            // 새로운 주식 추가 (매수인 경우만)
+            const newStock = {
+              id: `stock-${Date.now()}`,
+              symbol: transaction.stockId,
+              name: transaction.stockId, // API에서 나중에 업데이트
+              quantity: transaction.quantity,
+              averagePrice: transaction.price,
+              currentPrice: transaction.price,
+              marketValue: transaction.quantity * transaction.price,
+              unrealizedPnL: 0,
+              dailyChange: 0,
+              dailyChangePercent: 0,
+              weight: 0, // 나중에 계산
+              sector: '미분류',
+              exchange: transaction.stockId.match(/^\d{6}$/) ? 'KRX' : 'NASDAQ',
+              currency: transaction.stockId.match(/^\d{6}$/) ? 'KRW' : 'USD',
+              lastUpdated: new Date().toISOString()
+            }
+            updatedStocks.push(newStock)
+          }
+          
+          return {
+            stockTransactions: [...state.stockTransactions, transaction],
+            stocks: updatedStocks
+          }
+        }),
       updateStock: (id, updates) =>
         set((state) => ({
           stocks: state.stocks.map(stock =>
@@ -319,6 +394,31 @@ export const useAppStore = create<AppStore>()(
           return await exchangeRateService.convertUsdToKrw(stock.marketValue)
         }
         return stock.marketValue
+      },
+
+      // 실시간 주식 가격 업데이트
+      updateStockPrices: async (stocks: Stock[]) => {
+        set((state) => {
+          const updatedStocks = [...state.stocks]
+          
+          stocks.forEach(updatedStock => {
+            const index = updatedStocks.findIndex(s => s.symbol === updatedStock.symbol)
+            if (index >= 0) {
+              const currentStock = updatedStocks[index]
+              updatedStocks[index] = {
+                ...currentStock,
+                currentPrice: updatedStock.currentPrice,
+                marketValue: currentStock.quantity * updatedStock.currentPrice,
+                unrealizedPnL: (currentStock.quantity * updatedStock.currentPrice) - (currentStock.quantity * currentStock.averagePrice),
+                dailyChange: updatedStock.dailyChange || 0,
+                dailyChangePercent: updatedStock.dailyChangePercent || 0,
+                lastUpdated: new Date().toISOString()
+              }
+            }
+          })
+          
+          return { stocks: updatedStocks }
+        })
       },
     }),
     {
