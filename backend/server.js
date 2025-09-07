@@ -36,10 +36,17 @@ function generateCORSOrigins() {
   const ports = [3000, 3001, 3002, 3003, 3004, 3005, 5173]
   const origins = []
   
-  // 모든 로컬 IP와 포트 조합 생성
-  for (const ip of localIPs) {
-    for (const port of ports) {
-      origins.push(`http://${ip}:${port}`)
+  // Production frontend URL 추가
+  if (process.env.FRONTEND_URL) {
+    origins.push(process.env.FRONTEND_URL)
+  }
+  
+  // 개발 환경용 로컬 IP와 포트 조합 생성
+  if (process.env.NODE_ENV !== 'production') {
+    for (const ip of localIPs) {
+      for (const port of ports) {
+        origins.push(`http://${ip}:${port}`)
+      }
     }
   }
   
