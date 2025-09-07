@@ -187,11 +187,11 @@ export function AssetsPage() {
   return (
     <div className="mobile-container space-y-4 sm:space-y-6">
       {/* 헤더 */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">자산 상세</h1>
-          <p className="text-muted-foreground">
-            보유 중인 현금성 자산을 관리하고 추적하세요
+      <div className="flex flex-col space-y-2 sm:space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+        <div className="space-y-1">
+          <h1 className="mobile-title">자산 상세</h1>
+          <p className="mobile-subtitle mobile-text-wrap">
+            현금성 자산 통합 관리
           </p>
         </div>
         

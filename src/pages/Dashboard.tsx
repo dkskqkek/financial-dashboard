@@ -313,9 +313,9 @@ export function Dashboard() {
       {/* 헤더 - 모바일 최적화 */}
       <div className="flex flex-col space-y-2 sm:space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
         <div className="space-y-1">
-          <h1 className="mobile-title">대시보드</h1>
+          <h1 className="mobile-title">자산 현황</h1>
           <p className="mobile-subtitle mobile-text-wrap">
-            자산 현황을 확인하세요
+            포트폴리오 종합 관리
           </p>
         </div>
         

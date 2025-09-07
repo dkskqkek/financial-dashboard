@@ -17,11 +17,11 @@ export function RealEstatePage() {
   const netRealEstateValue = totalRealEstateValue - totalLoanBalance
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">부동산 & 대출</h1>
-          <p className="text-muted-foreground">부동산 자산과 대출을 관리하세요</p>
+    <div className="mobile-container space-y-3 sm:space-y-4 lg:space-y-6">
+      <div className="flex flex-col space-y-2 sm:space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+        <div className="space-y-1">
+          <h1 className="mobile-title">부동산 & 대출</h1>
+          <p className="mobile-subtitle mobile-text-wrap">자산과 대출 관리</p>
         </div>
         <div className="flex space-x-2">
           <AddLoanPaymentForm />
