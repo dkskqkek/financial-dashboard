@@ -50,35 +50,50 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null
 }
 
-const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percentage }: any) => {
-  if (percentage < 5) return null // 5% 미만은 라벨 숨김
+const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percentage, name }: any) => {
+  if (percentage < 3) return null // 3% 미만은 라벨 숨김
   
   const RADIAN = Math.PI / 180
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.8
   const x = cx + radius * Math.cos(-midAngle * RADIAN)
   const y = cy + radius * Math.sin(-midAngle * RADIAN)
 
   return (
-    <text
-      x={x}
-      y={y}
-      fill="white"
-      textAnchor={x > cx ? 'start' : 'end'}
-      dominantBaseline="central"
-      className="text-sm font-medium"
-    >
-      {`${percentage.toFixed(1)}%`}
-    </text>
+    <g>
+      <text
+        x={x}
+        y={y - 6}
+        fill="white"
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="text-xs font-medium"
+      >
+        {name}
+      </text>
+      <text
+        x={x}
+        y={y + 6}
+        fill="white"
+        textAnchor="middle"
+        dominantBaseline="central"
+        className="text-xs font-bold"
+      >
+        {`${percentage.toFixed(1)}%`}
+      </text>
+    </g>
   )
 }
 
 export function AssetAllocationChart({ allocation, summary }: AssetAllocationChartProps) {
-  const chartData = Object.entries(allocation).map(([key, percentage]) => ({
-    name: LABELS[key as keyof AssetAllocation],
-    key,
-    percentage,
-    value: (summary.totalAssets * percentage) / 100,
-  })).filter(item => item.percentage > 0)
+  const chartData = Object.entries(allocation)
+    .map(([key, percentage]) => ({
+      name: LABELS[key as keyof AssetAllocation],
+      key,
+      percentage,
+      value: (summary.totalAssets * percentage) / 100,
+    }))
+    .filter(item => item.percentage > 0.1) // 0.1% 이상만 표시
+    .sort((a, b) => b.percentage - a.percentage) // 큰 순으로 정렬
 
   // 리밸런싱 제안
   const targetAllocation = {
@@ -106,9 +121,9 @@ export function AssetAllocationChart({ allocation, summary }: AssetAllocationCha
       </CardHeader>
       
       <CardContent className="px-3 pb-3">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <div className="space-y-6">
           {/* 도넛 차트 */}
-          <div className="h-48 sm:h-64 relative mobile-chart">
+          <div className="h-56 sm:h-64 relative mobile-chart">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -116,9 +131,9 @@ export function AssetAllocationChart({ allocation, summary }: AssetAllocationCha
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={CustomLabel}
-                  outerRadius={80}
-                  innerRadius={40}
+                  label={(props) => CustomLabel({...props, name: chartData.find(item => item.value === props.value)?.name})}
+                  outerRadius={85}
+                  innerRadius={45}
                   fill="#8884d8"
                   dataKey="value"
                   paddingAngle={2}
@@ -136,32 +151,32 @@ export function AssetAllocationChart({ allocation, summary }: AssetAllocationCha
             
             {/* 중앙 총자산 표시 */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-xs text-muted-foreground">총자산</div>
-              <div className="text-lg font-bold currency">
+              <div className="text-xs text-muted-foreground mobile-text">총자산</div>
+              <div className="text-sm sm:text-lg font-bold currency mobile-text">
                 {formatCurrency(summary.totalAssets)}
               </div>
             </div>
           </div>
           
           {/* 범례 및 상세 정보 */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             {chartData.map((item) => (
               <div
                 key={item.key}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                className="flex items-center justify-between p-2 sm:p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
               >
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
                   <div
-                    className="w-4 h-4 rounded-full"
+                    className="w-3 h-3 sm:w-4 sm:h-4 rounded-full flex-shrink-0"
                     style={{ backgroundColor: COLORS[item.key as keyof typeof COLORS] }}
                   />
-                  <span className="font-medium">{item.name}</span>
+                  <span className="font-medium text-xs sm:text-sm mobile-text-wrap">{item.name}</span>
                 </div>
-                <div className="text-right">
-                  <div className="text-sm font-medium currency">
+                <div className="text-right flex-shrink-0">
+                  <div className="text-xs sm:text-sm font-medium currency mobile-text">
                     {formatCurrency(item.value)}
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="text-xs text-muted-foreground mobile-text">
                     {item.percentage.toFixed(1)}%
                   </div>
                 </div>

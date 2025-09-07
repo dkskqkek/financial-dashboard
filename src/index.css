@@ -63,9 +63,9 @@
   .mobile-title {
     @apply text-base sm:text-lg lg:text-xl xl:text-2xl font-bold;
     line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: break-word;
     max-width: 100%;
   }
   
