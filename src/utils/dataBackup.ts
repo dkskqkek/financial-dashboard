@@ -75,12 +75,29 @@ export class DataBackupService {
       
       // Zustand store에 백업 데이터 복원
       const storeName = useAppStore.persist.getOptions().name || 'financial-dashboard-store'
-      localStorage.setItem(storeName, JSON.stringify({
-        state: backup.data,
-        version: 0
-      }))
+      
+      // 백업 데이터를 직접 store에 설정
+      if (backup.data) {
+        // localStorage에 복원할 데이터 저장
+        localStorage.setItem(storeName, JSON.stringify({
+          state: backup.data,
+          version: 0
+        }))
+        
+        // Zustand store 상태도 직접 업데이트
+        const store = useAppStore.getState()
+        Object.keys(backup.data).forEach(key => {
+          if (key in store && typeof store[key as keyof typeof store] !== 'function') {
+            ;(store as any)[key] = backup.data[key]
+          }
+        })
+        
+        // 강제로 store 리하이드레이션
+        useAppStore.persist.rehydrate()
+      }
       
       console.log(`✅ 데이터 복구 완료:`, backup.timestamp)
+      alert(`백업 데이터 복구 완료! 페이지를 새로고침해주세요.`)
       return true
     } catch (error) {
       console.error('❌ 데이터 복구 실패:', error)
