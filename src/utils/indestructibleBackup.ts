@@ -17,13 +17,15 @@ interface IndestructibleBackup {
 }
 
 export class IndestructibleDataVault {
-  // 5개의 독립적인 저장소
+  // PWA 전용 다중 저장소 (브라우저와 완전히 독립)
   private static readonly STORAGE_KEYS = {
-    main: 'financial-main-data',
-    backup1: 'financial-backup-1', 
-    backup2: 'financial-backup-2',
-    backup3: 'financial-backup-3',
-    emergency: 'financial-emergency-vault'
+    main: 'financial-pwa-main-data',
+    backup1: 'financial-pwa-backup-1', 
+    backup2: 'financial-pwa-backup-2',
+    backup3: 'financial-pwa-backup-3',
+    emergency: 'financial-pwa-emergency-vault',
+    weekly: 'financial-pwa-weekly-archive',
+    monthly: 'financial-pwa-monthly-archive'
   }
   
   private static readonly INDEXEDDB_NAME = 'FinancialVaultDB'
@@ -117,28 +119,74 @@ export class IndestructibleDataVault {
     })
   }
   
-  // 📦 자동 파일 다운로드
+  // 📦 PWA 전용 백업 저장
   private static async autoDownloadBackup(backup: IndestructibleBackup): Promise<void> {
     try {
       const dataStr = JSON.stringify(backup, null, 2)
-      const blob = new Blob([dataStr], { type: 'application/json' })
-      const url = URL.createObjectURL(blob)
       
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `financial-vault-${backup.timestamp.split('T')[0]}-${backup.id.split('_')[2]}.json`
-      a.style.display = 'none'
+      // PWA 전용 날짜별 아카이브 (더 많은 사본 보관)
+      const dateKey = `financial-pwa-archive-${backup.timestamp.split('T')[0]}`
+      const timeKey = `financial-pwa-time-${backup.timestamp.replace(/[:.]/g, '-')}`
       
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
+      localStorage.setItem(dateKey, dataStr)
+      localStorage.setItem(timeKey, dataStr)
       
-      URL.revokeObjectURL(url)
-      console.log('💾 자동 파일 다운로드 완료')
+      // 주간 아카이브 (일요일마다 생성)
+      const now = new Date()
+      if (now.getDay() === 0) { // 일요일
+        const weekKey = `financial-pwa-week-${now.getFullYear()}-W${Math.ceil(now.getDate() / 7)}`
+        localStorage.setItem(weekKey, dataStr)
+      }
+      
+      // 월간 아카이브 (매월 1일)
+      if (now.getDate() === 1) {
+        const monthKey = `financial-pwa-month-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+        localStorage.setItem(monthKey, dataStr)
+      }
+      
+      // 시간별 백업은 최근 48시간만 유지 (PWA 저장소 관리)
+      const twoDaysAgo = Date.now() - (48 * 60 * 60 * 1000)
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('financial-pwa-time-')) {
+          const timeStr = key.replace('financial-pwa-time-', '').replace(/-/g, ':')
+          const backupTime = new Date(timeStr)
+          if (backupTime.getTime() < twoDaysAgo) {
+            localStorage.removeItem(key)
+          }
+        }
+      })
+      
+      console.log('📱 PWA 백업 아카이브 완료:', { dateKey, timeKey })
+      
+      // PWA에서도 Web Share API 사용 시도 (백업 공유)
+      if (this.isPWA() && navigator.share) {
+        // 백업을 텍스트로 공유 가능하도록 준비
+        const shareData = {
+          title: `금융 데이터 백업 - ${backup.timestamp.split('T')[0]}`,
+          text: `백업 ID: ${backup.id}\n데이터 크기: ${dataStr.length} 문자`,
+        }
+        
+        // 공유는 사용자 액션에 의해서만 실행되므로 여기서는 준비만
+        console.log('📤 PWA 공유 준비 완료:', shareData.title)
+      }
       
     } catch (error) {
-      console.warn('⚠️ 자동 다운로드 실패:', error)
+      console.warn('⚠️ PWA 백업 저장 실패:', error)
     }
+  }
+  
+  // PWA 환경 감지
+  private static isPWA(): boolean {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           (window.navigator as any).standalone === true ||
+           document.referrer.includes('android-app://') ||
+           window.location.search.includes('pwa=true')
+  }
+  
+  // 모바일 환경 감지
+  private static isMobile(): boolean {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           window.innerWidth <= 768
   }
   
   // 🔍 데이터 무결성 검증

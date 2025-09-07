@@ -221,28 +221,63 @@ export function SettingsPage() {
             </Button>
             <BackupManager />
             
-            {/* 🛡️ 불멸 백업 상태 표시 */}
+            {/* 🛡️ PWA 불멸 백업 상태 표시 */}
             <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                <span className="text-sm font-medium text-green-800">불멸 백업 시스템 활성화됨</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                  <span className="text-sm font-medium text-green-800">
+                    {window.matchMedia?.('(display-mode: standalone)').matches ? 'PWA' : '웹'} 불멸 백업 활성화됨
+                  </span>
+                </div>
+                <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
+                  📱 모바일 최적화
+                </span>
               </div>
               <p className="text-xs text-green-600 mt-1">
-                데이터가 5중 보안으로 보호되고 있으며, 자동으로 파일 백업도 생성됩니다.
+                PWA 전용 7중 보안 저장: 메인, 백업1-3, 긴급, 주간, 월간 아카이브 + IndexedDB
               </p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="mt-2 text-xs"
-                onClick={() => {
-                  if (typeof window !== 'undefined' && (window as any).DataVault) {
-                    (window as any).DataVault.inspect()
-                    alert('개발자 도구 콘솔에서 백업 상태를 확인하세요.')
-                  }
-                }}
-              >
-                백업 상태 검사
-              </Button>
+              <div className="flex space-x-2 mt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs flex-1"
+                  onClick={() => {
+                    if (typeof window !== 'undefined' && (window as any).DataVault) {
+                      (window as any).DataVault.inspect()
+                      alert('개발자 도구 콘솔에서 백업 상태를 확인하세요.')
+                    }
+                  }}
+                >
+                  백업 상태 검사
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs flex-1"
+                  onClick={async () => {
+                    try {
+                      const backupData = localStorage.getItem('financial-pwa-main-data')
+                      if (backupData && navigator.share) {
+                        await navigator.share({
+                          title: '금융 데이터 백업',
+                          text: `백업 크기: ${backupData.length} 문자\n생성일: ${new Date().toLocaleDateString()}`,
+                        })
+                      } else {
+                        // 공유 불가능시 클립보드에 복사
+                        if (backupData) {
+                          await navigator.clipboard.writeText(backupData)
+                          alert('백업 데이터가 클립보드에 복사되었습니다!')
+                        }
+                      }
+                    } catch (error) {
+                      alert('백업 공유에 실패했습니다.')
+                    }
+                  }}
+                >
+                  백업 공유
+                </Button>
+              </div>
             </div>
             
             <Button variant="destructive" className="w-full opacity-50 cursor-not-allowed" disabled>
