@@ -48,7 +48,7 @@ export function AddCashAccountForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button data-testid="add-account-trigger">
           <Plus className="h-4 w-4 mr-2" />
           계좌 추가
         </Button>

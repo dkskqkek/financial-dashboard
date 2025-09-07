@@ -17,7 +17,10 @@ export function AddTransactionForm() {
     description: '',
     amount: '',
     category: '',
-    memo: ''
+    memo: '',
+    date: new Date().toISOString().split('T')[0], // 날짜 선택 가능
+    fee: '', // 수수료 추가
+    reference: '' // 참조번호 추가
   })
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,16 +28,21 @@ export function AddTransactionForm() {
     
     const accountName = formData.account === '기타' ? customAccount : formData.account
     
+    const now = new Date().toISOString()
     const newTransaction: Transaction = {
       id: generateId(),
-      date: new Date().toISOString().split('T')[0],
+      date: formData.date,
       type: formData.type,
       account: accountName,
       description: formData.description,
       amount: formData.type === 'expense' ? -Math.abs(Number(formData.amount)) : Number(formData.amount),
-      balance: 0, // 실제로는 계좌 잔액 계산 필요
+      balance: 0, // 계좌 잔액은 별도로 계산
       category: formData.category,
-      memo: formData.memo || undefined
+      memo: formData.memo || undefined,
+      fee: formData.fee ? Number(formData.fee) : undefined,
+      reference: formData.reference || undefined,
+      createdAt: now,
+      updatedAt: now
     }
 
     addTransaction(newTransaction)
@@ -45,7 +53,10 @@ export function AddTransactionForm() {
       description: '',
       amount: '',
       category: '',
-      memo: ''
+      memo: '',
+      date: new Date().toISOString().split('T')[0],
+      fee: '',
+      reference: ''
     })
     setCustomAccount('')
   }
@@ -53,7 +64,7 @@ export function AddTransactionForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button data-testid="add-transaction-trigger">
           <Plus className="h-4 w-4 mr-2" />
           거래 추가
         </Button>
@@ -112,6 +123,18 @@ export function AddTransactionForm() {
           </div>
 
           <div>
+            <label htmlFor="transactionDate" className="text-sm font-medium">거래일</label>
+            <Input
+              id="transactionDate"
+              name="transactionDate"
+              type="date"
+              value={formData.date}
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              required
+            />
+          </div>
+
+          <div>
             <label htmlFor="description" className="text-sm font-medium">내용</label>
             <Input
               id="description"
@@ -123,17 +146,30 @@ export function AddTransactionForm() {
             />
           </div>
 
-          <div>
-            <label htmlFor="amount" className="text-sm font-medium">금액</label>
-            <Input
-              id="amount"
-              name="amount"
-              type="number"
-              value={formData.amount}
-              onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-              placeholder="금액을 입력하세요"
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="amount" className="text-sm font-medium">금액</label>
+              <Input
+                id="amount"
+                name="amount"
+                type="number"
+                value={formData.amount}
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                placeholder="금액을 입력하세요"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="fee" className="text-sm font-medium">수수료 (선택)</label>
+              <Input
+                id="fee"
+                name="fee"
+                type="number"
+                value={formData.fee}
+                onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
+                placeholder="수수료"
+              />
+            </div>
           </div>
 
           <div>
@@ -155,6 +191,17 @@ export function AddTransactionForm() {
               <option value="급여">급여</option>
               <option value="부업">부업</option>
             </select>
+          </div>
+
+          <div>
+            <label htmlFor="reference" className="text-sm font-medium">참조번호 (선택)</label>
+            <Input
+              id="reference"
+              name="reference"
+              value={formData.reference}
+              onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
+              placeholder="거래 참조번호 (영수증번호 등)"
+            />
           </div>
 
           <div>

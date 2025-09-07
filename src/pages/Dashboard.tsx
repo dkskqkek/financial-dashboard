@@ -334,7 +334,12 @@ export function Dashboard() {
             새로고침
           </Button>
           <BackupManager />
-          <Button size="sm">
+          <Button 
+            size="sm"
+            onClick={() => {
+              alert('알림 설정 기능은 준비 중입니다.')
+            }}
+          >
             <Bell className="h-4 w-4 mr-2" />
             알림 설정
           </Button>

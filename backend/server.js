@@ -439,7 +439,7 @@ app.get('/api/market/data', async (req, res) => {
     if (kospiData.status === 'fulfilled' && kospiData.value?.quoteResponse?.result?.[0]) {
       const quote = kospiData.value.quoteResponse.result[0]
       kospi = {
-        value: quote.regularMarketPrice || quote.previousClose || 2450,
+        value: quote.regularMarketPrice || quote.previousClose || 2600,
         change: quote.regularMarketChange || 0,
         changePercent: quote.regularMarketChangePercent || 0,
         isRealTime: !!quote.regularMarketTime,
@@ -449,7 +449,7 @@ app.get('/api/market/data', async (req, res) => {
       console.log('✅ 코스피 데이터 조회 성공:', kospi)
     } else {
       console.warn('❌ 코스피 데이터 조회 실패, 기본 데이터 사용')
-      kospi = { value: 2450, change: 0, changePercent: 0, isRealTime: false, marketTime: null }
+      kospi = { value: 2600, change: 0, changePercent: 0, isRealTime: false, marketTime: null }
     }
     
     // S&P 500 데이터 처리
@@ -457,7 +457,7 @@ app.get('/api/market/data', async (req, res) => {
     if (sp500Data.status === 'fulfilled' && sp500Data.value?.quoteResponse?.result?.[0]) {
       const quote = sp500Data.value.quoteResponse.result[0]
       sp500 = {
-        value: quote.regularMarketPrice || quote.previousClose || 4800,
+        value: quote.regularMarketPrice || quote.previousClose || 6000,
         change: quote.regularMarketChange || 0,
         changePercent: quote.regularMarketChangePercent || 0,
         isRealTime: !!quote.regularMarketTime,
@@ -467,15 +467,15 @@ app.get('/api/market/data', async (req, res) => {
       console.log('✅ S&P 500 데이터 조회 성공:', sp500)
     } else {
       console.warn('❌ S&P 500 데이터 조회 실패, 기본 데이터 사용')
-      sp500 = { value: 4800, change: 0, changePercent: 0, isRealTime: false, marketTime: null }
+      sp500 = { value: 6000, change: 0, changePercent: 0, isRealTime: false, marketTime: null }
     }
     
     // USD/KRW 환율 데이터 처리
-    let usdKrw = { value: 1300, change: 0, changePercent: 0, isRealTime: false }
+    let usdKrw = { value: 1380, change: 0, changePercent: 0, isRealTime: false }
     if (usdKrwData.status === 'fulfilled' && usdKrwData.value?.quoteResponse?.result?.[0]) {
       const quote = usdKrwData.value.quoteResponse.result[0]
       usdKrw = {
-        value: quote.regularMarketPrice || quote.previousClose || 1300,
+        value: quote.regularMarketPrice || quote.previousClose || 1380,
         change: quote.regularMarketChange || 0,
         changePercent: quote.regularMarketChangePercent || 0,
         isRealTime: !!quote.regularMarketTime,
@@ -485,7 +485,7 @@ app.get('/api/market/data', async (req, res) => {
       console.log('✅ USD/KRW 데이터 조회 성공:', usdKrw)
     } else {
       console.warn('❌ USD/KRW 데이터 조회 실패, 기본 데이터 사용')
-      usdKrw = { value: 1300, change: 0, changePercent: 0, isRealTime: false, marketTime: null }
+      usdKrw = { value: 1380, change: 0, changePercent: 0, isRealTime: false, marketTime: null }
     }
     
     const marketData = { kospi, sp500, usdKrw }
@@ -499,17 +499,17 @@ app.get('/api/market/data', async (req, res) => {
     // 에러 발생시 합리적인 Mock 데이터 반환
     const fallbackData = {
       kospi: { 
-        value: 2450 + Math.random() * 100 - 50, 
+        value: 2600 + Math.random() * 100 - 50, 
         change: Math.random() * 20 - 10, 
         changePercent: (Math.random() * 2 - 1) 
       },
       sp500: { 
-        value: 4800 + Math.random() * 200 - 100, 
+        value: 6000 + Math.random() * 200 - 100, 
         change: Math.random() * 40 - 20, 
         changePercent: (Math.random() * 1.5 - 0.75) 
       },
       usdKrw: { 
-        value: 1300 + Math.random() * 40 - 20, 
+        value: 1380 + Math.random() * 40 - 20, 
         change: Math.random() * 10 - 5, 
         changePercent: (Math.random() * 1 - 0.5) 
       }

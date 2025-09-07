@@ -61,7 +61,7 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="mobile-container space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">설정</h1>
@@ -69,7 +69,7 @@ export function SettingsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -90,7 +90,9 @@ export function SettingsPage() {
               <label htmlFor="userPhone" className="text-sm font-medium">전화번호</label>
               <Input id="userPhone" name="userPhone" placeholder="010-1234-5678" />
             </div>
-            <Button>정보 업데이트</Button>
+            <Button onClick={() => {
+              alert('사용자 정보 업데이트 기능은 준비 중입니다.')
+            }}>정보 업데이트</Button>
           </CardContent>
         </Card>
 
@@ -174,7 +176,9 @@ export function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={() => {
+              alert('비밀번호 변경 기능은 준비 중입니다.')
+            }}>
               비밀번호 변경
             </Button>
             <div className="flex items-center justify-between">
@@ -184,7 +188,9 @@ export function SettingsPage() {
               </div>
               <Badge variant="success">활성화</Badge>
             </div>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={() => {
+              alert('로그인 기록 확인 기능은 준비 중입니다.')
+            }}>
               로그인 기록 확인
             </Button>
           </CardContent>
@@ -198,7 +204,9 @@ export function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={() => {
+              alert('데이터 내보내기 기능은 준비 중입니다.')
+            }}>
               <Download className="h-4 w-4 mr-2" />
               데이터 내보내기 (Excel)
             </Button>
@@ -210,10 +218,16 @@ export function SettingsPage() {
               <Upload className="h-4 w-4 mr-2" />
               금융 데이터 가져오기
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={() => {
+              alert('백업 생성 기능은 준비 중입니다.')
+            }}>
               백업 생성
             </Button>
-            <Button variant="destructive" className="w-full">
+            <Button variant="destructive" className="w-full" onClick={() => {
+              if (confirm('정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                alert('데이터 삭제 기능은 준비 중입니다.')
+              }
+            }}>
               <Trash2 className="h-4 w-4 mr-2" />
               모든 데이터 삭제
             </Button>
@@ -244,7 +258,9 @@ export function SettingsPage() {
                 </div>
               </div>
             </div>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={() => {
+              alert('새 API 연결 기능은 준비 중입니다.')
+            }}>
               새 API 연결
             </Button>
           </CardContent>

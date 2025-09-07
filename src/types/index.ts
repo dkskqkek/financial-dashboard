@@ -60,6 +60,10 @@ export interface Transaction {
   balance: number
   category: string
   memo?: string
+  fee?: number // 수수료 (PRD 요구사항)
+  reference?: string // 참조번호 (PRD 요구사항)
+  createdAt?: string // 생성 시간 추적
+  updatedAt?: string // 수정 시간 추적
 }
 
 export interface Stock {

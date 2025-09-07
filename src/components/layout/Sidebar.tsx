@@ -35,7 +35,7 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        'fixed inset-y-0 left-0 z-50 w-72 bg-card border-r transform transition-transform duration-300 ease-in-out',
+        'fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-card border-r transform transition-transform duration-300 ease-in-out',
         sidebarOpen ? 'translate-x-0' : '-translate-x-full',
         'lg:translate-x-0 lg:static lg:inset-0'
       )}
@@ -93,7 +93,7 @@ export function Sidebar() {
                 to={item.href}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors group',
+                    'flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors group touch-target',
                     isActive
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'

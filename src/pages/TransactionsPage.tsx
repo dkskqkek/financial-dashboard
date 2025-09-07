@@ -121,7 +121,7 @@ export function TransactionsPage() {
   const transactionTypes = ['income', 'expense', 'transfer']
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="mobile-container space-y-4 sm:space-y-6">
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
@@ -136,7 +136,12 @@ export function TransactionsPage() {
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             새로고침
           </Button>
-          <Button variant="outline">
+          <Button 
+            variant="outline"
+            onClick={() => {
+              alert('데이터 내보내기 기능은 준비 중입니다.')
+            }}
+          >
             <Download className="h-4 w-4 mr-2" />
             내보내기
           </Button>
@@ -145,7 +150,7 @@ export function TransactionsPage() {
       </div>
 
       {/* 요약 카드들 */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="mobile-grid gap-4 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">총 수입</CardTitle>
@@ -208,7 +213,7 @@ export function TransactionsPage() {
       </div>
 
       {/* 차트 섹션 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <Card>
           <CardHeader>
             <CardTitle>카테고리별 지출</CardTitle>
@@ -306,7 +311,9 @@ export function TransactionsPage() {
                 <TableHead>계좌/종목</TableHead>
                 <TableHead>거래내용</TableHead>
                 <TableHead className="text-right">금액</TableHead>
+                <TableHead className="text-right">수수료</TableHead>
                 <TableHead>카테고리</TableHead>
+                <TableHead>참조번호</TableHead>
                 <TableHead>메모</TableHead>
               </TableRow>
             </TableHeader>
@@ -330,8 +337,14 @@ export function TransactionsPage() {
                   <TableCell className={`text-right font-mono ${getColorByValue(transaction.amount)}`}>
                     {formatCurrency(transaction.amount)}
                   </TableCell>
+                  <TableCell className="text-right font-mono text-muted-foreground">
+                    {transaction.fee ? formatCurrency(transaction.fee) : '-'}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="outline">{transaction.category}</Badge>
+                  </TableCell>
+                  <TableCell className="max-w-24 truncate text-sm text-muted-foreground">
+                    {transaction.reference || '-'}
                   </TableCell>
                   <TableCell className="max-w-32 truncate">
                     {transaction.memo || '-'}
@@ -350,7 +363,19 @@ export function TransactionsPage() {
               <p className="text-sm text-muted-foreground">
                 첫 번째 거래를 추가해보세요
               </p>
-              <Button className="mt-4">
+              <Button 
+                className="mt-4"
+                onClick={() => {
+                  // AddTransactionForm의 트리거 버튼을 찾아서 클릭
+                  const addButton = document.querySelector('[data-testid="add-transaction-trigger"]') as HTMLButtonElement
+                  if (addButton) {
+                    addButton.click()
+                  } else {
+                    // 대안: 직접 알림
+                    alert('거래 추가 기능을 사용하려면 상단의 "거래 추가" 버튼을 클릭하세요.')
+                  }
+                }}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 거래 추가하기
               </Button>

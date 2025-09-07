@@ -185,7 +185,7 @@ export function AssetsPage() {
   const accountTypes = ['입출금통장', 'CMA', '외화예금', '정기예금', '적금']
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="mobile-container space-y-4 sm:space-y-6">
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
@@ -196,7 +196,9 @@ export function AssetsPage() {
         </div>
         
         <div className="flex items-center space-x-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => {
+            alert('데이터 내보내기 기능은 준비 중입니다.')
+          }}>
             <Download className="h-4 w-4 mr-2" />
             내보내기
           </Button>
@@ -205,7 +207,7 @@ export function AssetsPage() {
       </div>
 
       {/* 요약 카드들 */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="mobile-grid gap-4 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">총 현금 자산</CardTitle>
@@ -379,7 +381,14 @@ export function AssetsPage() {
               <p className="text-sm text-muted-foreground">
                 첫 번째 계좌를 추가해보세요
               </p>
-              <Button className="mt-4">
+              <Button className="mt-4" onClick={() => {
+                const addButton = document.querySelector('[data-testid="add-account-trigger"]') as HTMLButtonElement
+                if (addButton) {
+                  addButton.click()
+                } else {
+                  alert('계좌 추가 기능을 사용하려면 상단의 "계좌 추가" 버튼을 클릭하세요.')
+                }
+              }}>
                 <Plus className="h-4 w-4 mr-2" />
                 계좌 추가하기
               </Button>
@@ -389,7 +398,7 @@ export function AssetsPage() {
       </Card>
 
       {/* 자산 분석 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <Card>
           <CardHeader>
             <CardTitle>은행별 분산</CardTitle>

@@ -645,7 +645,19 @@ export function StocksPage() {
               <p className="text-sm text-muted-foreground">
                 첫 번째 주식 투자를 시작해보세요
               </p>
-              <Button className="mt-4">
+              <Button 
+                className="mt-4"
+                onClick={() => {
+                  // AddStockTransactionForm의 트리거 버튼을 찾아서 클릭
+                  const addButton = document.querySelector('[data-testid="add-stock-trigger"]') as HTMLButtonElement
+                  if (addButton) {
+                    addButton.click()
+                  } else {
+                    // 대안: 직접 알림
+                    alert('주식 추가 기능을 사용하려면 상단의 "매매 기록" 버튼을 클릭하세요.')
+                  }
+                }}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 매수 기록 추가
               </Button>

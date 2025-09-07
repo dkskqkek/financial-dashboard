@@ -40,7 +40,19 @@
       "Bash(git commit:*)",
       "Bash(git config:*)",
       "Bash(winget:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(claude mcp:*)",
+      "Bash(render --version)",
+      "Bash(npm run lint)",
+      "mcp__render__list_workspaces",
+      "mcp__render__list_services",
+      "mcp__render__get_service",
+      "mcp__render__list_logs",
+      "mcp__render__list_deploys",
+      "mcp__render__get_deploy",
+      "WebFetch(domain:financial-dashboard-2-black.vercel.app)",
+      "mcp__render__update_environment_variables"
     ],
     "deny": [],
     "ask": []

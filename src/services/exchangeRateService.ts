@@ -13,7 +13,7 @@ interface CachedRate {
 class ExchangeRateService {
   private cache: CachedRate | null = null
   private readonly CACHE_DURATION = 5 * 60 * 1000 // 5분 캐싱으로 단축
-  private readonly FALLBACK_RATE = 1300 // 기존 하드코딩 값을 fallback으로 사용
+  private readonly FALLBACK_RATE = 1380 // 2025년 현재 환율 반영
 
   // 백엔드 API를 우선적으로 사용하여 환율 조회
   async fetchExchangeRate(): Promise<number> {

@@ -5,23 +5,43 @@
 /* 모바일 최적화 CSS */
 @layer components {
   .mobile-container {
-    @apply px-2 py-2;
+    @apply px-3 py-4 sm:px-4 lg:px-6;
   }
   
   .mobile-grid {
-    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
   }
   
   .mobile-card {
-    @apply p-3 min-h-fit overflow-hidden;
+    @apply p-4 min-h-fit overflow-hidden;
   }
   
   .mobile-text {
-    @apply text-sm leading-tight;
+    @apply text-sm leading-tight sm:text-base;
   }
   
   .mobile-chart {
-    @apply h-48 sm:h-64;
+    @apply h-56 sm:h-64 lg:h-72;
+  }
+  
+  /* 모바일 테이블 최적화 */
+  .mobile-table {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .mobile-table th,
+  .mobile-table td {
+    @apply px-2 py-3 sm:px-4;
+  }
+  
+  /* 모바일 버튼 최적화 */
+  .mobile-button {
+    @apply min-h-[44px] px-4 py-2 text-sm sm:text-base;
+  }
+  
+  /* 모바일 입력 필드 최적화 */
+  .mobile-input {
+    @apply min-h-[44px] px-3 py-2 text-base;
   }
   
   /* PWA 스타일 */

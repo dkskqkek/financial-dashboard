@@ -196,7 +196,7 @@ export function AddStockTransactionForm() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button data-testid="add-stock-trigger">
           <Plus className="h-4 w-4 mr-2" />
           매매 기록
         </Button>
