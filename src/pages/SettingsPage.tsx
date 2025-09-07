@@ -227,12 +227,22 @@ export function SettingsPage() {
                 <div className="flex items-center">
                   <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                   <span className="text-sm font-medium text-green-800">
-                    {window.matchMedia?.('(display-mode: standalone)').matches ? 'PWA' : '웹'} 불멸 백업 활성화됨
+                    {typeof window !== 'undefined' && window.matchMedia?.('(display-mode: standalone)').matches ? 'PWA' : '웹'} 불멸 백업 활성화됨
                   </span>
                 </div>
                 <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
                   📱 모바일 최적화
                 </span>
+              </div>
+              
+              {/* 모바일 디버그 정보 */}
+              <div className="mt-2 p-2 bg-gray-100 rounded text-xs">
+                <div className="space-y-1">
+                  <div>환경: {typeof window !== 'undefined' && window.matchMedia?.('(display-mode: standalone)').matches ? '📱 PWA 앱' : '🌐 브라우저'}</div>
+                  <div>화면: {typeof window !== 'undefined' ? `${window.innerWidth}×${window.innerHeight}` : '확인중...'}</div>
+                  <div>백업 수: {typeof window !== 'undefined' ? Object.keys(localStorage).filter(k => k.includes('financial')).length : '확인중...'}</div>
+                  <div>메인 데이터: {typeof window !== 'undefined' && localStorage.getItem('financial-pwa-main-data') ? '✅ 있음' : '❌ 없음'}</div>
+                </div>
               </div>
               <p className="text-xs text-green-600 mt-1">
                 PWA 전용 7중 보안 저장: 메인, 백업1-3, 긴급, 주간, 월간 아카이브 + IndexedDB
