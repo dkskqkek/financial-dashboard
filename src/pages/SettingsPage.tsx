@@ -220,13 +220,34 @@ export function SettingsPage() {
               금융 데이터 가져오기
             </Button>
             <BackupManager />
-            <Button variant="destructive" className="w-full" onClick={() => {
-              if (confirm('정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-                alert('데이터 삭제 기능은 준비 중입니다.')
-              }
-            }}>
+            
+            {/* 🛡️ 불멸 백업 상태 표시 */}
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                <span className="text-sm font-medium text-green-800">불멸 백업 시스템 활성화됨</span>
+              </div>
+              <p className="text-xs text-green-600 mt-1">
+                데이터가 5중 보안으로 보호되고 있으며, 자동으로 파일 백업도 생성됩니다.
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-2 text-xs"
+                onClick={() => {
+                  if (typeof window !== 'undefined' && (window as any).DataVault) {
+                    (window as any).DataVault.inspect()
+                    alert('개발자 도구 콘솔에서 백업 상태를 확인하세요.')
+                  }
+                }}
+              >
+                백업 상태 검사
+              </Button>
+            </div>
+            
+            <Button variant="destructive" className="w-full opacity-50 cursor-not-allowed" disabled>
               <Trash2 className="h-4 w-4 mr-2" />
-              모든 데이터 삭제
+              데이터 삭제 불가능 (불멸 보호)
             </Button>
           </CardContent>
         </Card>

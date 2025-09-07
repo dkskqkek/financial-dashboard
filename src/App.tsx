@@ -12,6 +12,7 @@ import { RealEstatePage } from '@/pages/RealEstatePage'
 import { MonthlyPage } from '@/pages/MonthlyPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { setupAutoBackup, setupDailyBackupScheduler } from '@/utils/dataBackup'
+import { setupIndestructibleBackup } from '@/utils/indestructibleBackup'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,11 +25,14 @@ const queryClient = new QueryClient({
 
 function App() {
   useEffect(() => {
-    // 자동 백업 시스템 초기화
-    setupAutoBackup()
+    // 🛡️ 불멸 백업 시스템 최우선 활성화
+    setupIndestructibleBackup()
     
-    // 일일 백업 스케줄러 초기화
+    // 기존 백업 시스템도 유지 (추가 보안)
+    setupAutoBackup()
     setupDailyBackupScheduler()
+    
+    console.log('🔒 모든 백업 시스템 활성화 완료')
   }, [])
 
   return (
