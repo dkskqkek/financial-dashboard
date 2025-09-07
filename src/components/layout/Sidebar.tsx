@@ -20,6 +20,7 @@ import { useAppStore } from '@/stores'
 const navigation = [
   { name: '대시보드', href: '/', icon: Home },
   { name: '자산 상세', href: '/assets', icon: Wallet },
+  { name: '계좌 관리', href: '/accounts', icon: Building },
   { name: '거래 내역', href: '/transactions', icon: Receipt },
   { name: '주식 포트폴리오', href: '/stocks', icon: TrendingUp },
   { name: '예적금', href: '/savings', icon: PiggyBank },

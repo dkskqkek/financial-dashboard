@@ -309,39 +309,42 @@ export function Dashboard() {
   }
 
   return (
-    <div className="space-y-4 mobile-container sm:space-y-6 sm:p-6">
-      {/* 헤더 */}
-      <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div>
-          <h1 className="text-xl font-bold sm:text-3xl">대시보드</h1>
-          <p className="mobile-text text-muted-foreground">
-            자산 현황 및 투자 성과를 한눈에 확인하세요
+    <div className="mobile-container space-y-3 sm:space-y-4 lg:space-y-6">
+      {/* 헤더 - 모바일 최적화 */}
+      <div className="flex flex-col space-y-2 sm:space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+        <div className="space-y-1">
+          <h1 className="mobile-title">대시보드</h1>
+          <p className="mobile-subtitle mobile-text-wrap">
+            자산 현황을 확인하세요
           </p>
         </div>
         
-        <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-3 sm:space-y-0">
-          <Badge variant="outline" className="text-xs w-fit">
-            업데이트: {lastUpdateTime.toLocaleTimeString('ko-KR')}
+        {/* 모바일 헤더 버튼들 */}
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          <Badge variant="outline" className="mobile-hide text-xs px-2 py-1">
+            {lastUpdateTime.toLocaleTimeString('ko-KR')}
           </Badge>
           <Button
             variant="outline"
             size="sm"
             onClick={loadDashboardData}
             disabled={isLoading}
-            className="w-fit"
+            className="mobile-button flex-shrink-0"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            새로고침
+            <RefreshCw className={`h-3 w-3 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+            <span className="mobile-only">새로고침</span>
+            <span className="mobile-hide">새로고침</span>
           </Button>
-          <BackupManager />
+          <div className="mobile-hide">
+            <BackupManager />
+          </div>
           <Button 
             size="sm"
-            onClick={() => {
-              alert('알림 설정 기능은 준비 중입니다.')
-            }}
+            onClick={() => alert('알림 설정 기능은 준비 중입니다.')}
+            className="mobile-button mobile-hide"
           >
-            <Bell className="h-4 w-4 mr-2" />
-            알림 설정
+            <Bell className="h-3 w-3 mr-1" />
+            알림
           </Button>
         </div>
       </div>
@@ -382,15 +385,17 @@ export function Dashboard() {
         />
       </div>
 
-      {/* 차트 섹션 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
-        <AssetChart
-          data={chartData}
-          selectedRange={selectedTimeRange}
-          onRangeChange={setSelectedTimeRange}
-        />
+      {/* 차트 섹션 - 모바일 최적화 */}
+      <div className="space-y-4 lg:grid lg:grid-cols-3 lg:gap-6 lg:space-y-0">
+        <div className="lg:col-span-2">
+          <AssetChart
+            data={chartData}
+            selectedRange={selectedTimeRange}
+            onRangeChange={setSelectedTimeRange}
+          />
+        </div>
         
-        <div className="space-y-6">
+        <div className="space-y-4 lg:space-y-6">
           <AssetAllocationChart
             allocation={assetAllocation}
             summary={assetSummary}
@@ -400,79 +405,79 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* 빠른 액션 */}
-      <Card>
-        <CardHeader>
-          <CardTitle>빠른 액션</CardTitle>
-          <p className="text-sm text-muted-foreground">
+      {/* 빠른 액션 - 모바일 최적화 */}
+      <Card className="mobile-card">
+        <CardHeader className="mobile-card-header">
+          <CardTitle className="mobile-card-title">빠른 액션</CardTitle>
+          <p className="mobile-text text-muted-foreground mobile-hide">
             자주 사용하는 기능들을 바로 실행하세요
           </p>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
             <Button 
               variant="outline" 
-              className="h-20 flex-col hover:bg-primary/10 transition-colors"
+              className="mobile-button h-16 sm:h-20 flex-col hover:bg-primary/10 transition-colors touch-target"
               onClick={() => handleQuickAction('transaction')}
             >
-              <Wallet className="h-6 w-6 mb-2" />
-              <span className="text-sm">거래 입력</span>
+              <Wallet className="h-4 w-4 sm:h-6 sm:w-6 mb-1 sm:mb-2" />
+              <span className="text-xs sm:text-sm mobile-text-wrap">거래 입력</span>
             </Button>
             
             <Button 
               variant="outline" 
-              className="h-20 flex-col hover:bg-primary/10 transition-colors"
+              className="mobile-button h-16 sm:h-20 flex-col hover:bg-primary/10 transition-colors touch-target"
               onClick={() => handleQuickAction('portfolio')}
             >
-              <TrendingUp className="h-6 w-6 mb-2" />
-              <span className="text-sm">포트폴리오</span>
+              <TrendingUp className="h-4 w-4 sm:h-6 sm:w-6 mb-1 sm:mb-2" />
+              <span className="text-xs sm:text-sm mobile-text-wrap">포트폴리오</span>
             </Button>
             
             <Button 
               variant="outline" 
-              className="h-20 flex-col hover:bg-primary/10 transition-colors"
+              className="mobile-button h-16 sm:h-20 flex-col hover:bg-primary/10 transition-colors touch-target"
               onClick={() => handleQuickAction('goals')}
             >
-              <Target className="h-6 w-6 mb-2" />
-              <span className="text-sm">목표 설정</span>
+              <Target className="h-4 w-4 sm:h-6 sm:w-6 mb-1 sm:mb-2" />
+              <span className="text-xs sm:text-sm mobile-text-wrap">목표 설정</span>
             </Button>
             
             <Button 
               variant="outline" 
-              className="h-20 flex-col hover:bg-primary/10 transition-colors"
+              className="mobile-button h-16 sm:h-20 flex-col hover:bg-primary/10 transition-colors touch-target"
               onClick={() => handleQuickAction('analysis')}
             >
-              <Award className="h-6 w-6 mb-2" />
-              <span className="text-sm">성과 분석</span>
+              <Award className="h-4 w-4 sm:h-6 sm:w-6 mb-1 sm:mb-2" />
+              <span className="text-xs sm:text-sm mobile-text-wrap">성과 분석</span>
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* 최근 활동 요약 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>최근 거래</CardTitle>
-            <p className="text-sm text-muted-foreground">
+      {/* 최근 활동 요약 - 모바일 최적화 */}
+      <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
+        <Card className="mobile-card">
+          <CardHeader className="mobile-card-header">
+            <CardTitle className="mobile-card-title">최근 거래</CardTitle>
+            <p className="mobile-text text-muted-foreground mobile-hide">
               최근 7일간의 주요 거래 내역
             </p>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {[1, 2, 3, 4, 5].map((i) => (
+            <div className="space-y-2 sm:space-y-3">
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                      <TrendingUp className="h-4 w-4 text-primary" />
+                  <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                     </div>
-                    <div>
-                      <p className="font-medium text-sm">삼성전자 매수</p>
+                    <div className="min-w-0 flex-1">
+                      <p className="mobile-text font-medium mobile-text-wrap">삼성전자 매수</p>
                       <p className="text-xs text-muted-foreground">2024.01.1{i}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-success">
+                  <div className="text-right flex-shrink-0">
+                    <p className="mobile-number font-medium text-success">
                       +{formatCurrency(Math.random() * 1000000 + 500000)}
                     </p>
                   </div>
@@ -482,41 +487,41 @@ export function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>투자 알림</CardTitle>
-            <p className="text-sm text-muted-foreground">
+        <Card className="mobile-card">
+          <CardHeader className="mobile-card-header">
+            <CardTitle className="mobile-card-title">투자 알림</CardTitle>
+            <p className="mobile-text text-muted-foreground mobile-hide">
               포트폴리오 관련 중요 알림
             </p>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-start space-x-3 p-3 bg-warning/10 rounded-lg">
-                <Bell className="h-4 w-4 text-warning mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium">리밸런싱 필요</p>
-                  <p className="text-xs text-muted-foreground">
-                    현금 비중이 목표치를 15%p 초과했습니다
+            <div className="space-y-2 sm:space-y-3">
+              <div className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 bg-warning/10 rounded-lg">
+                <Bell className="h-3 w-3 sm:h-4 sm:w-4 text-warning mt-0.5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="mobile-text font-medium mobile-text-wrap">리밸런싱 필요</p>
+                  <p className="text-xs text-muted-foreground mobile-text-wrap">
+                    현금 비중이 목표치를 15%p 초과
                   </p>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3 p-3 bg-success/10 rounded-lg">
-                <Award className="h-4 w-4 text-success mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium">배당금 수령</p>
-                  <p className="text-xs text-muted-foreground">
-                    삼성전자 배당금 {formatCurrency(125000)} 예정
+              <div className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 bg-success/10 rounded-lg">
+                <Award className="h-3 w-3 sm:h-4 sm:w-4 text-success mt-0.5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="mobile-text font-medium mobile-text-wrap">배당금 수령</p>
+                  <p className="text-xs text-muted-foreground mobile-text-wrap">
+                    삼성전자 배당금 {formatCurrency(125000)}
                   </p>
                 </div>
               </div>
               
-              <div className="flex items-start space-x-3 p-3 bg-primary/10 rounded-lg">
-                <Target className="h-4 w-4 text-primary mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium">목표 달성</p>
-                  <p className="text-xs text-muted-foreground">
-                    연간 수익률 목표의 78% 달성했습니다
+              <div className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 bg-primary/10 rounded-lg">
+                <Target className="h-3 w-3 sm:h-4 sm:w-4 text-primary mt-0.5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="mobile-text font-medium mobile-text-wrap">목표 달성</p>
+                  <p className="text-xs text-muted-foreground mobile-text-wrap">
+                    연간 수익률 목표의 78% 달성
                   </p>
                 </div>
               </div>

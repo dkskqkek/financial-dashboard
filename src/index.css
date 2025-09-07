@@ -5,43 +5,128 @@
 /* 모바일 최적화 CSS */
 @layer components {
   .mobile-container {
-    @apply px-3 py-4 sm:px-4 lg:px-6;
+    @apply px-2 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6;
   }
   
   .mobile-grid {
-    @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4;
   }
   
   .mobile-card {
-    @apply p-4 min-h-fit overflow-hidden;
+    @apply p-3 sm:p-4 min-h-fit overflow-hidden;
   }
   
   .mobile-text {
-    @apply text-sm leading-tight sm:text-base;
+    @apply text-xs leading-tight sm:text-sm lg:text-base break-words;
   }
   
   .mobile-chart {
-    @apply h-56 sm:h-64 lg:h-72;
+    @apply h-48 sm:h-56 lg:h-72;
   }
   
   /* 모바일 테이블 최적화 */
   .mobile-table {
-    @apply text-xs sm:text-sm;
+    @apply text-xs sm:text-sm overflow-x-auto;
+    min-width: 100%;
   }
   
   .mobile-table th,
   .mobile-table td {
-    @apply px-2 py-3 sm:px-4;
+    @apply px-1 py-2 sm:px-2 sm:py-3 lg:px-4 text-left;
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+  
+  /* 작은 화면용 테이블 */
+  .mobile-table-compact th,
+  .mobile-table-compact td {
+    @apply px-1 py-1.5 text-xs;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   /* 모바일 버튼 최적화 */
   .mobile-button {
-    @apply min-h-[44px] px-4 py-2 text-sm sm:text-base;
+    @apply min-h-[40px] px-3 py-2 text-xs sm:min-h-[44px] sm:px-4 sm:text-sm lg:text-base;
+    touch-action: manipulation;
   }
   
   /* 모바일 입력 필드 최적화 */
   .mobile-input {
-    @apply min-h-[44px] px-3 py-2 text-base;
+    @apply min-h-[40px] px-2 py-1.5 text-sm sm:min-h-[44px] sm:px-3 sm:py-2 sm:text-base;
+    -webkit-appearance: none;
+    border-radius: 6px;
+  }
+  
+  /* 모바일 제목 최적화 */
+  .mobile-title {
+    @apply text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold leading-tight;
+  }
+  
+  .mobile-subtitle {
+    @apply text-sm sm:text-base lg:text-lg text-muted-foreground;
+  }
+  
+  /* 모바일 카드 헤더 최적화 */
+  .mobile-card-header {
+    @apply pb-2 sm:pb-3;
+  }
+  
+  .mobile-card-title {
+    @apply text-sm sm:text-base lg:text-lg font-semibold leading-tight;
+  }
+  
+  /* 모바일 통계 카드 */
+  .mobile-stat-grid {
+    @apply grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4;
+  }
+  
+  .mobile-stat-card {
+    @apply text-center p-2 sm:p-3 lg:p-4;
+  }
+  
+  .mobile-stat-value {
+    @apply text-lg sm:text-xl lg:text-2xl font-bold leading-tight;
+  }
+  
+  .mobile-stat-label {
+    @apply text-xs sm:text-sm text-muted-foreground mt-1;
+  }
+  
+  /* 모바일 폼 최적화 */
+  .mobile-form {
+    @apply space-y-3 sm:space-y-4;
+  }
+  
+  .mobile-form-grid {
+    @apply grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4;
+  }
+  
+  /* 모바일 다이얼로그 최적화 */
+  .mobile-dialog {
+    @apply max-w-[95vw] sm:max-w-[90vw] lg:max-w-[80vw] max-h-[90vh];
+  }
+  
+  /* 반응형 텍스트 줄바꿈 */
+  .mobile-text-wrap {
+    @apply break-words hyphens-auto;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* 숫자 표시 최적화 */
+  .mobile-number {
+    @apply font-mono text-xs sm:text-sm lg:text-base tabular-nums;
+  }
+  
+  /* 작은 화면용 숨김 */
+  .mobile-hide {
+    @apply hidden sm:block;
+  }
+  
+  .mobile-only {
+    @apply block sm:hidden;
   }
   
   /* PWA 스타일 */

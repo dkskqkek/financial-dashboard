@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { FileUpload } from '@/components/ui/file-upload'
+import { BackupManager } from '@/components/ui/BackupManager'
 import { useAppStore } from '@/stores'
 import {
   Settings,
@@ -61,12 +62,12 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="mobile-container space-y-4 sm:space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">설정</h1>
-          <p className="text-muted-foreground">계정 설정과 앱 환경설정을 관리하세요</p>
-        </div>
+    <div className="mobile-container space-y-3 sm:space-y-4 lg:space-y-6">
+      <div className="space-y-1">
+        <h1 className="mobile-title">설정</h1>
+        <p className="mobile-subtitle mobile-text-wrap">
+          계정 설정과 앱 환경설정을 관리하세요
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -218,11 +219,7 @@ export function SettingsPage() {
               <Upload className="h-4 w-4 mr-2" />
               금융 데이터 가져오기
             </Button>
-            <Button variant="outline" className="w-full" onClick={() => {
-              alert('백업 생성 기능은 준비 중입니다.')
-            }}>
-              백업 생성
-            </Button>
+            <BackupManager />
             <Button variant="destructive" className="w-full" onClick={() => {
               if (confirm('정말로 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
                 alert('데이터 삭제 기능은 준비 중입니다.')

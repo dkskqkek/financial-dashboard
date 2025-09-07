@@ -121,91 +121,91 @@ export function TransactionsPage() {
   const transactionTypes = ['income', 'expense', 'transfer']
 
   return (
-    <div className="mobile-container space-y-4 sm:space-y-6">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">거래 내역</h1>
-          <p className="text-muted-foreground">
+    <div className="mobile-container space-y-3 sm:space-y-4 lg:space-y-6">
+      {/* 헤더 - 모바일 최적화 */}
+      <div className="flex flex-col space-y-2 sm:space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+        <div className="space-y-1">
+          <h1 className="mobile-title">거래 내역</h1>
+          <p className="mobile-subtitle mobile-text-wrap">
             모든 거래를 추적하고 분석하세요
           </p>
         </div>
         
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" onClick={loadTransactions} disabled={isLoading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-            새로고침
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          <Button variant="outline" onClick={loadTransactions} disabled={isLoading} className="mobile-button">
+            <RefreshCw className={`h-3 w-3 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+            <span className="mobile-hide">새로고침</span>
+            <span className="mobile-only">새로고침</span>
           </Button>
           <Button 
             variant="outline"
-            onClick={() => {
-              alert('데이터 내보내기 기능은 준비 중입니다.')
-            }}
+            onClick={() => alert('데이터 내보내기 기능은 준비 중입니다.')}
+            className="mobile-button mobile-hide"
           >
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="h-3 w-3 mr-1" />
             내보내기
           </Button>
           <AddTransactionForm />
         </div>
       </div>
 
-      {/* 요약 카드들 */}
-      <div className="mobile-grid gap-4 sm:gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">총 수입</CardTitle>
-            <ArrowUpCircle className="h-4 w-4 text-success" />
+      {/* 요약 카드들 - 모바일 최적화 */}
+      <div className="mobile-stat-grid">
+        <Card className="mobile-card">
+          <CardHeader className="mobile-card-header flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="mobile-card-title">총 수입</CardTitle>
+            <ArrowUpCircle className="h-3 w-3 sm:h-4 sm:w-4 text-success" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success currency">
+          <CardContent className="mobile-stat-card">
+            <div className="mobile-stat-value text-success mobile-number">
               {formatCurrency(totalIncome)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="mobile-stat-label">
               {filteredTransactions.filter(t => t.type === 'income').length}건
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">총 지출</CardTitle>
-            <ArrowDownCircle className="h-4 w-4 text-destructive" />
+        <Card className="mobile-card">
+          <CardHeader className="mobile-card-header flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="mobile-card-title">총 지출</CardTitle>
+            <ArrowDownCircle className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-destructive currency">
+          <CardContent className="mobile-stat-card">
+            <div className="mobile-stat-value text-destructive mobile-number">
               {formatCurrency(totalExpense)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="mobile-stat-label">
               {filteredTransactions.filter(t => t.type === 'expense').length}건
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">순 자산 변화</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+        <Card className="mobile-card">
+          <CardHeader className="mobile-card-header flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="mobile-card-title">순 변화</CardTitle>
+            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold currency ${getColorByValue(netAmount)}`}>
+          <CardContent className="mobile-stat-card">
+            <div className={`mobile-stat-value mobile-number ${getColorByValue(netAmount)}`}>
               {formatCurrency(netAmount)}
             </div>
-            <p className="text-xs text-muted-foreground">
-              이번 달 기준
+            <p className="mobile-stat-label">
+              이번 달
             </p>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">평균 지출</CardTitle>
-            <ArrowDownCircle className="h-4 w-4 text-muted-foreground" />
+        <Card className="mobile-card">
+          <CardHeader className="mobile-card-header flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="mobile-card-title">평균 지출</CardTitle>
+            <ArrowDownCircle className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold currency">
+          <CardContent className="mobile-stat-card">
+            <div className="mobile-stat-value mobile-number">
               {formatCurrency(totalExpense / Math.max(1, filteredTransactions.filter(t => t.type === 'expense').length))}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="mobile-stat-label">
               건당 평균
             </p>
           </CardContent>
