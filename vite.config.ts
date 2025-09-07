@@ -13,23 +13,25 @@ export default defineConfig({
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              networkTimeoutSeconds: 10,
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
+            handler: 'NetworkOnly' // 캐시 비활성화
           },
           {
             urlPattern: /^http:\/\/localhost:3007\/api\/.*/i,
             handler: 'NetworkOnly'
+          },
+          {
+            urlPattern: /\.(?:js|css|html)$/,
+            handler: 'NetworkFirst', // 정적 자원도 네트워크 우선
+            options: {
+              cacheName: 'static-cache',
+              networkTimeoutSeconds: 5
+            }
           }
         ],
         navigateFallback: null,
         skipWaiting: true,
-        clientsClaim: true
+        clientsClaim: true,
+        cleanupOutdatedCaches: true // 오래된 캐시 자동 정리
       },
       manifest: {
         name: 'Financial Dashboard',
@@ -73,7 +75,11 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           recharts: ['recharts'],
           ui: ['lucide-react']
-        }
+        },
+        // 캐시 버스팅을 위한 파일명에 해시 추가
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
     chunkSizeWarningLimit: 1000,
