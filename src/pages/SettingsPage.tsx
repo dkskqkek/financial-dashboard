@@ -221,6 +221,13 @@ export function SettingsPage() {
             </Button>
             <BackupManager />
             
+            {/* 🚨 TEST MARKER - 이 텍스트가 보이면 배포 성공 */}
+            <div className="p-4 bg-red-100 border-2 border-red-500 rounded-lg text-center">
+              <h3 className="text-red-800 font-bold text-lg">🚨 테스트 마커</h3>
+              <p className="text-red-700">이 빨간 박스가 보이면 배포가 성공한 것입니다!</p>
+              <p className="text-xs text-red-600 mt-1">타임스탬프: {new Date().toISOString()}</p>
+            </div>
+            
             {/* 🛡️ PWA 불멸 백업 상태 표시 */}
             <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
               <div className="flex items-center justify-between">

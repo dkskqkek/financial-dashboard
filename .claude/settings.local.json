@@ -52,7 +52,8 @@
       "mcp__render__list_deploys",
       "mcp__render__get_deploy",
       "WebFetch(domain:financial-dashboard-2-black.vercel.app)",
-      "mcp__render__update_environment_variables"
+      "mcp__render__update_environment_variables",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
