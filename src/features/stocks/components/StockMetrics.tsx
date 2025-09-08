@@ -1,12 +1,6 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  DollarSign, 
-  TrendingUp, 
-  TrendingDown, 
-  BarChart3, 
-  PieChart as PieIcon 
-} from 'lucide-react'
+import { DollarSign, TrendingUp, TrendingDown, BarChart3, PieChart as PieIcon } from 'lucide-react'
 import { formatCurrency, formatPercent, getColorByValue } from '@/lib/utils'
 
 interface StockMetricsProps {
@@ -22,7 +16,7 @@ export function StockMetrics({
   totalUnrealizedPnLKrw,
   totalCost,
   totalReturn,
-  filteredStocksCount
+  filteredStocksCount,
 }: StockMetricsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

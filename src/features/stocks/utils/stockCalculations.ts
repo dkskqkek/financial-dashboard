@@ -21,31 +21,34 @@ export const calculateTotalReturn = (totalMarketValue: number, totalUnrealizedPn
  * 주식을 수익률 범위별로 분류
  */
 export const categorizeStocksByReturn = (stocks: Stock[]): Record<ReturnRange, number> => {
-  return RETURN_RANGES.reduce((acc, range) => {
-    let count = 0
-    
-    stocks.forEach(stock => {
-      const rate = calculateReturnRate(stock.currentPrice, stock.averagePrice)
-      
-      switch (range) {
-        case '20% 이상':
-          if (rate >= 20) count++
-          break
-        case '10-20%':
-          if (rate >= 10 && rate < 20) count++
-          break
-        case '0-10%':
-          if (rate >= 0 && rate < 10) count++
-          break
-        case '0% 미만':
-          if (rate < 0) count++
-          break
-      }
-    })
-    
-    acc[range] = count
-    return acc
-  }, {} as Record<ReturnRange, number>)
+  return RETURN_RANGES.reduce(
+    (acc, range) => {
+      let count = 0
+
+      stocks.forEach(stock => {
+        const rate = calculateReturnRate(stock.currentPrice, stock.averagePrice)
+
+        switch (range) {
+          case '20% 이상':
+            if (rate >= 20) count++
+            break
+          case '10-20%':
+            if (rate >= 10 && rate < 20) count++
+            break
+          case '0-10%':
+            if (rate >= 0 && rate < 10) count++
+            break
+          case '0% 미만':
+            if (rate < 0) count++
+            break
+        }
+      })
+
+      acc[range] = count
+      return acc
+    },
+    {} as Record<ReturnRange, number>
+  )
 }
 
 /**
@@ -65,7 +68,7 @@ export const filterStocks = (
   selectedSector: string
 ): Stock[] => {
   return stocks.filter(stock => {
-    const matchesSearch = 
+    const matchesSearch =
       stock.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       stock.symbol.toLowerCase().includes(searchTerm.toLowerCase())
 

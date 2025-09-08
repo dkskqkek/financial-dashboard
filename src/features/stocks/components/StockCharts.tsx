@@ -1,12 +1,6 @@
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-} from 'recharts'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import { StockWeightDisplay } from '@/components/StockWeightDisplay'
 import { formatCurrency } from '@/lib/utils'
 import { STOCK_COLORS } from '../types/constants'
@@ -19,11 +13,11 @@ interface StockChartsProps {
   convertStockValueToKrw: (stock: Stock) => Promise<number>
 }
 
-export function StockCharts({ 
-  sectorData, 
-  sortedStocksKrw, 
+export function StockCharts({
+  sectorData,
+  sortedStocksKrw,
   totalMarketValueKrw,
-  convertStockValueToKrw 
+  convertStockValueToKrw,
 }: StockChartsProps) {
   const sectorChartData = Object.entries(sectorData).map(([sector, value]) => ({
     name: sector,

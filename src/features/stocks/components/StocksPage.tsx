@@ -6,13 +6,7 @@ import { RefreshCw, DollarSign } from 'lucide-react'
 import { AddStockTransactionForm } from '@/components/forms/AddStockTransactionForm'
 
 // 새로 분리된 컴포넌트들
-import {
-  StockMetrics,
-  StockCharts,
-  StockList,
-  StockAnalytics,
-  StockEditModal
-} from './index'
+import { StockMetrics, StockCharts, StockList, StockAnalytics, StockEditModal } from './index'
 
 // 훅과 서비스
 import { useStockPrices } from '../hooks/useStockPrices'
@@ -50,13 +44,13 @@ export function StocksPage() {
 
   // 커스텀 훅 사용
   const { updateStockPricesWithFeedback } = useStockPrices()
-  
+
   const stockCalculations = useStockCalculations({
     stocks: stocks || [],
     searchTerm,
     selectedExchange,
     selectedSector,
-    convertStockValueToKrw
+    convertStockValueToKrw,
   })
 
   // 페이지 로드 시 환율 업데이트

@@ -5,7 +5,9 @@ import type { Stock } from '../types/stock.types'
 export const useStockPrices = () => {
   const [isUpdating, setIsUpdating] = useState(false)
 
-  const updateIndividualStockPrices = async (stocks: Stock[]): Promise<{ updatedStocks: Stock[], updateCount: number }> => {
+  const updateIndividualStockPrices = async (
+    stocks: Stock[]
+  ): Promise<{ updatedStocks: Stock[]; updateCount: number }> => {
     console.log('🔄 개별 주식 시세 업데이트 시작')
     const updatedStocks = [...stocks]
     let updateCount = 0
@@ -37,14 +39,11 @@ export const useStockPrices = () => {
     return { updatedStocks, updateCount }
   }
 
-  const updateStockPricesWithFeedback = async (
-    stocks: Stock[], 
-    setStocks: (stocks: Stock[]) => void
-  ) => {
+  const updateStockPricesWithFeedback = async (stocks: Stock[], setStocks: (stocks: Stock[]) => void) => {
     setIsUpdating(true)
     try {
       const { updatedStocks, updateCount } = await updateIndividualStockPrices(stocks)
-      
+
       if (updateCount > 0) {
         setStocks(updatedStocks)
         alert(`${updateCount}개 주식의 시세가 업데이트되었습니다.`)
@@ -63,6 +62,6 @@ export const useStockPrices = () => {
   return {
     isUpdating,
     updateIndividualStockPrices,
-    updateStockPricesWithFeedback
+    updateStockPricesWithFeedback,
   }
 }

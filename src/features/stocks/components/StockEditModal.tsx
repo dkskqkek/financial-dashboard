@@ -22,7 +22,7 @@ export function StockEditModal({
   formData,
   setFormData,
   onSave,
-  onCancel
+  onCancel,
 }: StockEditModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>

@@ -42,12 +42,10 @@ export function StockList({
   totalMarketValueKrw,
   convertStockValueToKrw,
   onEditStock,
-  onDeleteStock
+  onDeleteStock,
 }: StockListProps) {
   // 정렬된 주식이 있으면 그것을 사용하고, 없으면 필터된 주식을 사용
-  const displayStocks = sortedStocksKrw.length > 0 
-    ? sortedStocksKrw.map(({ stock }) => stock) 
-    : filteredStocks
+  const displayStocks = sortedStocksKrw.length > 0 ? sortedStocksKrw.map(({ stock }) => stock) : filteredStocks
 
   return (
     <Card>

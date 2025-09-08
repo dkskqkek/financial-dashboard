@@ -17,7 +17,7 @@ export const useStockCalculations = ({
   searchTerm,
   selectedExchange,
   selectedSector,
-  convertStockValueToKrw
+  convertStockValueToKrw,
 }: UseStockCalculationsProps) => {
   const [totalMarketValueKrw, setTotalMarketValueKrw] = useState<number>(0)
   const [totalUnrealizedPnLKrw, setTotalUnrealizedPnLKrw] = useState<number>(0)
@@ -67,7 +67,7 @@ export const useStockCalculations = ({
     const timeoutId = setTimeout(() => {
       updateStockTotals(filteredStocks)
     }, DEBOUNCE_DELAY.TOTAL_UPDATE)
-    
+
     return () => clearTimeout(timeoutId)
   }, [stocks, searchTerm, selectedExchange, selectedSector, updateStockTotals])
 
@@ -126,6 +126,6 @@ export const useStockCalculations = ({
     sectorData,
     exchangeData,
     sortedStocksKrw,
-    updateStockTotals
+    updateStockTotals,
   }
 }

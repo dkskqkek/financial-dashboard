@@ -6,7 +6,7 @@ export class StockService {
   static async loadStocks(
     setIsLoading: (loading: boolean) => void,
     setStocks: (stocks: Stock[]) => void,
-    updateIndividualStockPrices: (stocks: Stock[]) => Promise<{ updatedStocks: Stock[], updateCount: number }>
+    updateIndividualStockPrices: (stocks: Stock[]) => Promise<{ updatedStocks: Stock[]; updateCount: number }>
   ): Promise<void> {
     setIsLoading(true)
     try {

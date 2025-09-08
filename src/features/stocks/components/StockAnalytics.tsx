@@ -13,11 +13,7 @@ interface StockAnalyticsProps {
   filteredStocks: Stock[]
 }
 
-export function StockAnalytics({ 
-  exchangeData, 
-  totalMarketValueKrw,
-  filteredStocks 
-}: StockAnalyticsProps) {
+export function StockAnalytics({ exchangeData, totalMarketValueKrw, filteredStocks }: StockAnalyticsProps) {
   const returnCategories = categorizeStocksByReturn(filteredStocks)
 
   return (
@@ -53,7 +49,7 @@ export function StockAnalytics({
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {RETURN_RANGES.map((range) => {
+            {RETURN_RANGES.map(range => {
               const count = returnCategories[range] || 0
               return (
                 <div key={range} className="flex items-center justify-between">
