@@ -33,7 +33,7 @@ export interface AssetAllocation {
   gold: number
   crypto: number
   realEstate: number
-  debt: number
+  debt?: number  // 선택적 속성으로 변경 (차트에서 별도 표시)
   // Optional properties for detailed stock allocation
   domesticStocks?: number
   foreignStocks?: number
