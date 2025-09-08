@@ -8,12 +8,16 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      devOptions: {
+        enabled: false, // 개발 모드에서는 비활성화
+        type: 'module'
+      },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\.*/i,
-            handler: 'NetworkOnly' // 캐시 비활성화
+            handler: 'NetworkOnly'
           },
           {
             urlPattern: /^http:\/\/localhost:3007\/api\/.*/i,
@@ -21,7 +25,7 @@ export default defineConfig({
           },
           {
             urlPattern: /\.(?:js|css|html)$/,
-            handler: 'NetworkFirst', // 정적 자원도 네트워크 우선
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'static-cache',
               networkTimeoutSeconds: 5
@@ -31,7 +35,7 @@ export default defineConfig({
         navigateFallback: null,
         skipWaiting: true,
         clientsClaim: true,
-        cleanupOutdatedCaches: true // 오래된 캐시 자동 정리
+        cleanupOutdatedCaches: true
       },
       manifest: {
         name: 'Financial Dashboard',

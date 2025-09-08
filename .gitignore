@@ -93,3 +93,5 @@ sw.js
 sw.js.map
 workbox-*.js
 workbox-*.js.map
+.gemini/
+gha-creds-*.json

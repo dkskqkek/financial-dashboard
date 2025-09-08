@@ -86,7 +86,7 @@ export function SavingsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {savings.map((item) => (
+              {savings.map(item => (
                 <TableRow key={item.id}>
                   <TableCell>
                     <div>

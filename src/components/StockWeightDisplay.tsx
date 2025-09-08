@@ -18,20 +18,24 @@ export function StockWeightDisplay({ stock, totalMarketValueKrw, convertStockVal
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
     }
-    
+
     const abortController = new AbortController()
     abortControllerRef.current = abortController
 
     const calculateWeight = async () => {
-      if (abortController.signal.aborted) return
-      
+      if (abortController.signal.aborted) {
+        return
+      }
+
       try {
         const stockValueKrw = await convertStockValueToKrw(stock)
-        if (abortController.signal.aborted) return
-        
+        if (abortController.signal.aborted) {
+          return
+        }
+
         const calculatedWeight = totalMarketValueKrw > 0 ? (stockValueKrw / totalMarketValueKrw) * 100 : 0
         setWeight(calculatedWeight)
-        
+
         // 수익률 계산 (환율 적용)
         const rate = ((stock.currentPrice - stock.averagePrice) / stock.averagePrice) * 100
         setReturnRate(rate)
@@ -43,9 +47,9 @@ export function StockWeightDisplay({ stock, totalMarketValueKrw, convertStockVal
         }
       }
     }
-    
+
     const timeoutId = setTimeout(calculateWeight, 100) // 100ms 디바운싱
-    
+
     return () => {
       clearTimeout(timeoutId)
       abortController.abort()
@@ -55,9 +59,7 @@ export function StockWeightDisplay({ stock, totalMarketValueKrw, convertStockVal
   return (
     <div className="text-right">
       <p className="text-sm font-medium">{weight.toFixed(1)}%</p>
-      <p className={`text-xs ${getColorByValue(stock.unrealizedPnL)}`}>
-        {formatPercent(returnRate)}
-      </p>
+      <p className={`text-xs ${getColorByValue(stock.unrealizedPnL)}`}>{formatPercent(returnRate)}</p>
     </div>
   )
 }

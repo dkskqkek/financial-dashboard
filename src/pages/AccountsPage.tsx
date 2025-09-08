@@ -4,14 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import {
   Building2,
   CreditCard,
@@ -28,34 +21,30 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import type { CashAccount, Transaction } from '@/types'
 
 export function AccountsPage() {
-  const { 
-    cashAccounts, 
-    transactions,
-    convertToKrwTotal,
-    deleteCashAccount,
-    addTransaction
-  } = useAppStore()
-  
+  const { cashAccounts, transactions, convertToKrwTotal, deleteCashAccount, addTransaction } = useAppStore()
+
   const [viewMode, setViewMode] = useState<'unified' | 'separate'>('unified')
   const [showBalances, setShowBalances] = useState(true)
   const [selectedAccount, setSelectedAccount] = useState<string | null>(null)
 
   // 계좌별 거래 내역 필터링
   const getAccountTransactions = (account: CashAccount): Transaction[] => {
-    return transactions.filter(tx => 
-      tx.account === `${account.bankName} - ${account.accountType}` ||
-      tx.account === account.bankName
-    ).slice(0, 10) // 최근 10개만
+    return transactions
+      .filter(tx => tx.account === `${account.bankName} - ${account.accountType}` || tx.account === account.bankName)
+      .slice(0, 10) // 최근 10개만
   }
 
   // 계좌별 그룹화
-  const accountsByBank = cashAccounts.reduce((acc, account) => {
-    if (!acc[account.bankName]) {
-      acc[account.bankName] = []
-    }
-    acc[account.bankName].push(account)
-    return acc
-  }, {} as Record<string, CashAccount[]>)
+  const accountsByBank = cashAccounts.reduce(
+    (acc, account) => {
+      if (!acc[account.bankName]) {
+        acc[account.bankName] = []
+      }
+      acc[account.bankName].push(account)
+      return acc
+    },
+    {} as Record<string, CashAccount[]>
+  )
 
   // 계좌간 이체 처리
   const handleTransfer = (fromAccount: CashAccount, toAccount: CashAccount, amount: number, memo?: string) => {
@@ -74,7 +63,7 @@ export function AccountsPage() {
       category: '이체',
       memo: memo || `${toAccount.bankName}로 이체`,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     }
 
     // 입금 거래
@@ -89,7 +78,7 @@ export function AccountsPage() {
       category: '이체',
       memo: memo || `${fromAccount.bankName}에서 이체`,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     }
 
     addTransaction(withdrawTransaction)
@@ -98,7 +87,7 @@ export function AccountsPage() {
 
   const AccountCard = ({ account }: { account: CashAccount }) => {
     const recentTransactions = getAccountTransactions(account)
-    
+
     return (
       <Card className="h-full">
         <CardHeader className="pb-3">
@@ -110,9 +99,7 @@ export function AccountsPage() {
                 <p className="text-sm text-muted-foreground">{account.accountType}</p>
               </div>
             </div>
-            <Badge variant={account.currency === 'KRW' ? 'default' : 'secondary'}>
-              {account.currency}
-            </Badge>
+            <Badge variant={account.currency === 'KRW' ? 'default' : 'secondary'}>{account.currency}</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -153,20 +140,11 @@ export function AccountsPage() {
           )}
 
           <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setSelectedAccount(account.id)}
-              className="flex-1"
-            >
+            <Button variant="outline" size="sm" onClick={() => setSelectedAccount(account.id)} className="flex-1">
               <ArrowRightLeft className="h-4 w-4 mr-1" />
               이체
             </Button>
-            <Button 
-              variant="destructive" 
-              size="sm" 
-              onClick={() => deleteCashAccount(account.id)}
-            >
+            <Button variant="destructive" size="sm" onClick={() => deleteCashAccount(account.id)}>
               삭제
             </Button>
           </div>
@@ -181,17 +159,10 @@ export function AccountsPage() {
       <div className="flex flex-col space-y-2 sm:space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
         <div className="space-y-1">
           <h1 className="mobile-title">계좌 관리</h1>
-          <p className="mobile-subtitle mobile-text-wrap">
-            멀티 계좌 통합 관리
-          </p>
+          <p className="mobile-subtitle mobile-text-wrap">멀티 계좌 통합 관리</p>
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowBalances(!showBalances)}
-            className="mobile-button"
-          >
+          <Button variant="outline" size="sm" onClick={() => setShowBalances(!showBalances)} className="mobile-button">
             {showBalances ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
             <span className="ml-1 mobile-hide">잔액 {showBalances ? '숨김' : '표시'}</span>
           </Button>
@@ -222,7 +193,10 @@ export function AccountsPage() {
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">USD 자산</p>
               <p className="text-2xl font-bold">
-                {formatCurrency(cashAccounts.filter(a => a.currency === 'USD').reduce((sum, a) => sum + a.balance, 0), 'USD')}
+                {formatCurrency(
+                  cashAccounts.filter(a => a.currency === 'USD').reduce((sum, a) => sum + a.balance, 0),
+                  'USD'
+                )}
               </p>
             </div>
             <div className="space-y-2">
@@ -237,7 +211,7 @@ export function AccountsPage() {
       </Card>
 
       {/* 보기 모드 선택 */}
-      <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as any)}>
+      <Tabs value={viewMode} onValueChange={value => setViewMode(value as any)}>
         <TabsList>
           <TabsTrigger value="unified" className="flex items-center">
             <PieChartIcon className="h-4 w-4 mr-2" />
@@ -283,9 +257,7 @@ export function AccountsPage() {
           <CardContent className="text-center py-12">
             <Wallet className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-medium mb-2">계좌가 없습니다</h3>
-            <p className="text-muted-foreground mb-4">
-              첫 번째 계좌를 추가하여 자산 관리를 시작하세요
-            </p>
+            <p className="text-muted-foreground mb-4">첫 번째 계좌를 추가하여 자산 관리를 시작하세요</p>
             <AddCashAccountForm />
           </CardContent>
         </Card>

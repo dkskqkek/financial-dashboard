@@ -16,40 +16,45 @@ export function FileUpload({ onFileUpload, className }: FileUploadProps) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0]
-    if (!file) return
-
-    setUploading(true)
-    setUploadStatus('idle')
-    setUploadedFile(file)
-    setErrorMessage('')
-
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await fetch('http://localhost:3007/api/data/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      const result = await response.json()
-
-      if (result.success) {
-        setUploadStatus('success')
-        onFileUpload?.(result.data)
-      } else {
-        setUploadStatus('error')
-        setErrorMessage(result.error || '업로드 실패')
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0]
+      if (!file) {
+        return
       }
-    } catch (error) {
-      setUploadStatus('error')
-      setErrorMessage(error instanceof Error ? error.message : '업로드 중 오류 발생')
-    } finally {
-      setUploading(false)
-    }
-  }, [onFileUpload])
+
+      setUploading(true)
+      setUploadStatus('idle')
+      setUploadedFile(file)
+      setErrorMessage('')
+
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const response = await fetch('http://localhost:3007/api/data/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        const result = await response.json()
+
+        if (result.success) {
+          setUploadStatus('success')
+          onFileUpload?.(result.data)
+        } else {
+          setUploadStatus('error')
+          setErrorMessage(result.error || '업로드 실패')
+        }
+      } catch (error) {
+        setUploadStatus('error')
+        setErrorMessage(error instanceof Error ? error.message : '업로드 중 오류 발생')
+      } finally {
+        setUploading(false)
+      }
+    },
+    [onFileUpload]
+  )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -58,9 +63,9 @@ export function FileUpload({ onFileUpload, className }: FileUploadProps) {
       'application/vnd.ms-excel': ['.xls'],
       'text/csv': ['.csv'],
       'text/html': ['.html'],
-      'application/octet-stream': ['.xlsx', '.xls', '.csv', '.html']
+      'application/octet-stream': ['.xlsx', '.xls', '.csv', '.html'],
     },
-    maxFiles: 1
+    maxFiles: 1,
   })
 
   const resetUpload = () => {
@@ -76,14 +81,12 @@ export function FileUpload({ onFileUpload, className }: FileUploadProps) {
           {...getRootProps()}
           className={cn(
             'border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors',
-            isDragActive
-              ? 'border-primary bg-primary/5'
-              : 'border-muted-foreground/25 hover:border-primary/50',
+            isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25 hover:border-primary/50',
             uploading && 'pointer-events-none opacity-50'
           )}
         >
           <input {...getInputProps()} />
-          
+
           <div className="space-y-4">
             <div className="flex justify-center">
               {uploadStatus === 'success' ? (
@@ -103,9 +106,7 @@ export function FileUpload({ onFileUpload, className }: FileUploadProps) {
               ) : uploadStatus === 'success' ? (
                 <div className="space-y-1">
                   <p className="text-lg font-medium text-green-600">업로드 완료!</p>
-                  <p className="text-sm text-muted-foreground">
-                    {uploadedFile?.name}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{uploadedFile?.name}</p>
                 </div>
               ) : uploadStatus === 'error' ? (
                 <div className="space-y-1">
@@ -115,13 +116,9 @@ export function FileUpload({ onFileUpload, className }: FileUploadProps) {
               ) : (
                 <div className="space-y-1">
                   <p className="text-lg font-medium">
-                    {isDragActive
-                      ? '파일을 여기에 놓아주세요'
-                      : '금융 데이터 파일을 업로드하세요'}
+                    {isDragActive ? '파일을 여기에 놓아주세요' : '금융 데이터 파일을 업로드하세요'}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    .xlsx, .xls, .csv, .html 파일 지원 (최대 10MB)
-                  </p>
+                  <p className="text-sm text-muted-foreground">.xlsx, .xls, .csv, .html 파일 지원 (최대 10MB)</p>
                 </div>
               )}
             </div>
@@ -138,7 +135,7 @@ export function FileUpload({ onFileUpload, className }: FileUploadProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={(e) => {
+                onClick={e => {
                   e.stopPropagation()
                   resetUpload()
                 }}

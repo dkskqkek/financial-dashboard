@@ -1,0 +1,316 @@
+name: 🔍 PR Auto Review & Quality Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main, develop]
+  pull_request_review:
+    types: [submitted]
+
+env:
+  NODE_VERSION: '20'
+  CACHE_KEY_PREFIX: 'financial-dashboard'
+
+jobs:
+  # 1. 코드 품질 검사
+  code-quality:
+    name: 📋 Code Quality Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🔧 Install Dependencies
+        run: npm ci
+
+      - name: 🧹 Lint Check
+        run: |
+          if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f "eslint.config.js" ]; then
+            npm run lint
+          else
+            echo "⚠️ ESLint 설정이 없습니다. 건너뜁니다."
+          fi
+
+      - name: 🎨 Format Check
+        run: |
+          if [ -f ".prettierrc" ] || [ -f "prettier.config.js" ]; then
+            npx prettier --check "src/**/*.{ts,tsx,js,jsx,css,md}"
+          else
+            echo "⚠️ Prettier 설정이 없습니다. 건너뜁니다."
+          fi
+
+      - name: 🔍 TypeScript Check
+        run: npx tsc --noEmit
+
+  # 2. 빌드 및 테스트
+  build-and-test:
+    name: 🏗️ Build & Test
+    runs-on: ubuntu-latest
+    needs: code-quality
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🔧 Install Dependencies
+        run: npm ci
+
+      - name: 🏗️ Build Application
+        run: npm run build
+
+      - name: 🧪 Run Tests
+        run: |
+          if [ -f "jest.config.js" ] || grep -q "test" package.json; then
+            npm test -- --watchAll=false --coverage
+          else
+            echo "⚠️ 테스트 설정이 없습니다. 건너뜁니다."
+          fi
+
+      - name: 📊 Upload Coverage
+        uses: codecov/codecov-action@v3
+        if: success()
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+
+  # 3. 보안 검사
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    needs: code-quality
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🔧 Install Dependencies
+        run: npm ci
+
+      - name: 🛡️ Audit Dependencies
+        run: npm audit --audit-level moderate
+
+      - name: 🔍 CodeQL Analysis
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
+      - name: 🏗️ Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: 🔍 Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+  # 4. 성능 검사
+  performance-check:
+    name: ⚡ Performance Check
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 🔧 Install Dependencies
+        run: npm ci
+
+      - name: 🏗️ Build for Analysis
+        run: npm run build
+
+      - name: 📊 Bundle Size Check
+        run: |
+          echo "## 📊 Bundle Size Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "### 빌드 결과" >> $GITHUB_STEP_SUMMARY
+          ls -la dist/assets/ >> $GITHUB_STEP_SUMMARY || echo "빌드 파일을 찾을 수 없습니다." >> $GITHUB_STEP_SUMMARY
+
+  # 5. PR 자동 코멘트
+  auto-comment:
+    name: 💬 Auto Comment
+    runs-on: ubuntu-latest
+    needs: [code-quality, build-and-test, security-scan, performance-check]
+    if: always()
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 💬 Create PR Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr_number = context.payload.pull_request.number;
+            
+            // 각 job의 결과 상태 확인
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner,
+              repo,
+              run_id: context.runId,
+            });
+            
+            const jobResults = {};
+            jobs.data.jobs.forEach(job => {
+              jobResults[job.name] = job.conclusion;
+            });
+            
+            const createStatusIcon = (status) => {
+              switch(status) {
+                case 'success': return '✅';
+                case 'failure': return '❌';
+                case 'cancelled': return '⏸️';
+                case 'skipped': return '⏭️';
+                default: return '🔄';
+              }
+            };
+            
+            const comment = `
+            ## 🤖 자동 PR 검토 결과
+            
+            ### 📋 검사 결과 요약
+            
+            | 검사 항목 | 상태 | 결과 |
+            |-----------|------|------|
+            | 코드 품질 | ${createStatusIcon(jobResults['📋 Code Quality Check'])} | ${jobResults['📋 Code Quality Check'] || 'pending'} |
+            | 빌드 & 테스트 | ${createStatusIcon(jobResults['🏗️ Build & Test'])} | ${jobResults['🏗️ Build & Test'] || 'pending'} |
+            | 보안 검사 | ${createStatusIcon(jobResults['🔒 Security Scan'])} | ${jobResults['🔒 Security Scan'] || 'pending'} |
+            | 성능 검사 | ${createStatusIcon(jobResults['⚡ Performance Check'])} | ${jobResults['⚡ Performance Check'] || 'pending'} |
+            
+            ### 📝 검토 가이드라인
+            
+            ${jobResults['📋 Code Quality Check'] === 'success' ? '✅' : '❌'} **코드 품질**: TypeScript, ESLint, Prettier 검사
+            ${jobResults['🏗️ Build & Test'] === 'success' ? '✅' : '❌'} **빌드 검증**: 컴파일 및 테스트 통과 여부
+            ${jobResults['🔒 Security Scan'] === 'success' ? '✅' : '❌'} **보안 검증**: 의존성 취약점 및 코드 보안 검사
+            ${jobResults['⚡ Performance Check'] === 'success' ? '✅' : '❌'} **성능 검증**: 번들 크기 및 성능 지표
+            
+            ### 📋 체크리스트 (리뷰어용)
+            
+            - [ ] 코드가 프로젝트 스타일 가이드를 준수하나요?
+            - [ ] 새로운 기능에 대한 테스트가 추가되었나요?
+            - [ ] 문서가 업데이트되었나요?
+            - [ ] Breaking changes가 있다면 명시되었나요?
+            - [ ] 성능에 부정적인 영향이 없나요?
+            
+            ---
+            🤖 *이 코멘트는 자동으로 생성되었습니다. 더 자세한 정보는 Actions 탭을 확인해주세요.*
+            `;
+            
+            // 기존 봇 코멘트 찾기
+            const comments = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: pr_number,
+            });
+            
+            const botComment = comments.data.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🤖 자동 PR 검토 결과')
+            );
+            
+            if (botComment) {
+              // 기존 코멘트 업데이트
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              // 새 코멘트 생성
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pr_number,
+                body: comment
+              });
+            }
+
+  # 6. 자동 라벨링
+  auto-labeling:
+    name: 🏷️ Auto Labeling
+    runs-on: ubuntu-latest
+    needs: [code-quality, build-and-test]
+    if: always()
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🏷️ Add Labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pr_number = context.payload.pull_request.number;
+            
+            // PR 파일 변경사항 분석
+            const files = await github.rest.pulls.listFiles({
+              owner,
+              repo,
+              pull_number: pr_number,
+            });
+            
+            const changedFiles = files.data.map(file => file.filename);
+            const labels = [];
+            
+            // 파일 패턴에 따른 라벨 추가
+            if (changedFiles.some(file => file.includes('src/components/'))) {
+              labels.push('🎨 UI/UX');
+            }
+            if (changedFiles.some(file => file.includes('src/pages/'))) {
+              labels.push('📱 Pages');
+            }
+            if (changedFiles.some(file => file.includes('src/utils/') || file.includes('src/services/'))) {
+              labels.push('🔧 Utils/Services');
+            }
+            if (changedFiles.some(file => file.includes('src/stores/'))) {
+              labels.push('🗃️ State Management');
+            }
+            if (changedFiles.some(file => file.includes('.css') || file.includes('.scss'))) {
+              labels.push('💄 Styling');
+            }
+            if (changedFiles.some(file => file.includes('package.json'))) {
+              labels.push('📦 Dependencies');
+            }
+            if (changedFiles.some(file => file.includes('.github/'))) {
+              labels.push('⚙️ CI/CD');
+            }
+            
+            // 변경사항 크기에 따른 라벨
+            const totalChanges = files.data.reduce((acc, file) => acc + file.changes, 0);
+            if (totalChanges < 10) {
+              labels.push('📏 Small');
+            } else if (totalChanges < 100) {
+              labels.push('📏 Medium');  
+            } else {
+              labels.push('📏 Large');
+            }
+            
+            // 라벨 추가
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: pr_number,
+                labels: labels
+              });
+            }

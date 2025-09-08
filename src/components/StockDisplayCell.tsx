@@ -16,13 +16,13 @@ export function StockDisplayCell({ value, currency, className = '' }: StockDispl
   useEffect(() => {
     const convertAndDisplay = () => {
       console.log(`💱 StockDisplayCell: value=${value}, currency=${currency}`)
-      
+
       if (currency === 'USD') {
         if (exchangeRate?.USD_KRW) {
           const rate = exchangeRate.USD_KRW
           const krwValue = value * rate
           const formattedValue = formatCurrency(krwValue)
-          
+
           console.log(`✅ USD → KRW 변환 (환율 ${rate}): $${value} → ${formattedValue}`)
           setDisplayValue(formattedValue)
         } else {
@@ -56,12 +56,17 @@ export function StockDisplayCell({ value, currency, className = '' }: StockDispl
   const currentRate = exchangeRate?.USD_KRW
 
   return (
-    <span className={className} title={currentRate ? `환율: $1 = ₩${currentRate.toFixed(2)} (${exchangeRate?.lastUpdated ? new Date(exchangeRate.lastUpdated).toLocaleTimeString() : '알수없음'})` : undefined}>
+    <span
+      className={className}
+      title={
+        currentRate
+          ? `환율: $1 = ₩${currentRate.toFixed(2)} (${exchangeRate?.lastUpdated ? new Date(exchangeRate.lastUpdated).toLocaleTimeString() : '알수없음'})`
+          : undefined
+      }
+    >
       {displayValue}
       {currency === 'USD' && currentRate && (
-        <span className="text-xs text-muted-foreground ml-1">
-          (@{currentRate.toFixed(0)})
-        </span>
+        <span className="text-xs text-muted-foreground ml-1">(@{currentRate.toFixed(0)})</span>
       )}
     </span>
   )

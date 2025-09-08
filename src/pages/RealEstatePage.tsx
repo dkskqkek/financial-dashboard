@@ -100,13 +100,17 @@ export function RealEstatePage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                realEstate.map((item) => (
+                realEstate.map(item => (
                   <TableRow key={item.id}>
                     <TableCell>
                       <Badge variant="outline">
-                        {item.type === 'apartment' ? '아파트' : 
-                         item.type === 'house' ? '단독주택' :
-                         item.type === 'commercial' ? '상가' : '토지'}
+                        {item.type === 'apartment'
+                          ? '아파트'
+                          : item.type === 'house'
+                            ? '단독주택'
+                            : item.type === 'commercial'
+                              ? '상가'
+                              : '토지'}
                       </Badge>
                     </TableCell>
                     <TableCell>{item.location}</TableCell>
@@ -135,7 +139,11 @@ export function RealEstatePage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => {
-                            if (window.confirm(`${item.location} ${item.type === 'apartment' ? '아파트' : item.type === 'house' ? '단독주택' : item.type === 'commercial' ? '상가' : '토지'}를 삭제하시겠습니까?`)) {
+                            if (
+                              window.confirm(
+                                `${item.location} ${item.type === 'apartment' ? '아파트' : item.type === 'house' ? '단독주택' : item.type === 'commercial' ? '상가' : '토지'}를 삭제하시겠습니까?`
+                              )
+                            ) {
                               deleteRealEstate(item.id)
                             }
                           }}
@@ -181,7 +189,7 @@ export function RealEstatePage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                loans.map((item) => (
+                loans.map(item => (
                   <TableRow key={item.id}>
                     <TableCell>
                       <div>
@@ -193,7 +201,9 @@ export function RealEstatePage() {
                       <Badge variant="secondary">{item.purpose}</Badge>
                     </TableCell>
                     <TableCell className="text-right currency">{formatCurrency(item.originalAmount)}</TableCell>
-                    <TableCell className="text-right currency text-destructive">{formatCurrency(item.currentBalance)}</TableCell>
+                    <TableCell className="text-right currency text-destructive">
+                      {formatCurrency(item.currentBalance)}
+                    </TableCell>
                     <TableCell className="text-right">{item.interestRate}%</TableCell>
                     <TableCell className="text-right currency">{formatCurrency(item.monthlyPayment)}</TableCell>
                     <TableCell>{formatDate(item.maturityDate)}</TableCell>

@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { useAppStore } from '@/stores'
 import { apiService } from '@/services/api'
 import { generateId, getErrorMessage } from '@/lib/utils'
@@ -23,7 +30,7 @@ export function AddStockTransactionForm() {
     exchange: 'KRX',
     sector: '',
     memo: '',
-    account: ''
+    account: '',
   })
   const [currentPrice, setCurrentPrice] = useState<number | null>(null)
 
@@ -31,30 +38,29 @@ export function AddStockTransactionForm() {
   const handleSymbolChange = async (symbol: string) => {
     const cleanSymbol = symbol.trim().toUpperCase()
     setFormData(prev => ({ ...prev, symbol: cleanSymbol }))
-    
+
     // 최소 길이 조건: 한국 주식 6자리, 미국 주식 1자리 이상
     const isKorean = /^\d{1,6}$/.test(cleanSymbol)
     const isGlobal = /^[A-Z]{1,}/.test(cleanSymbol)
     const minLength = isKorean ? 6 : 1
-    
+
     if (cleanSymbol.length >= minLength) {
       setSearchingStock(true)
       console.log(`🔍 종목 검색 시작: ${cleanSymbol}`)
-      
+
       try {
         console.log(`📡 API 요청 전 - baseUrl: ${(apiService as any).baseUrl}`)
         const stockInfo = await apiService.searchStock(cleanSymbol)
-        console.log(`📈 API 응답:`, stockInfo)
-        
+        console.log('📈 API 응답:', stockInfo)
+
         if (stockInfo) {
           setCurrentPrice(stockInfo.currentPrice || null)
           setFormData(prev => ({
             ...prev,
             name: stockInfo.name,
             // 기존 보유가 아닌 경우만 현재가를 단가에 입력
-            price: prev.type !== 'existing' ? (stockInfo.currentPrice?.toString() || '') : prev.price,
-            exchange: stockInfo.exchange === 'KRX' ? 'KRX' : 
-                     stockInfo.currency === 'USD' ? 'NASDAQ' : 'NYSE'
+            price: prev.type !== 'existing' ? stockInfo.currentPrice?.toString() || '' : prev.price,
+            exchange: stockInfo.exchange === 'KRX' ? 'KRX' : stockInfo.currency === 'USD' ? 'NASDAQ' : 'NYSE',
           }))
           console.log(`✅ 종목 조회 성공: ${stockInfo.name}`)
         } else {
@@ -62,14 +68,12 @@ export function AddStockTransactionForm() {
           setCurrentPrice(null)
           setFormData(prev => ({ ...prev, name: '', price: '' }))
         }
-        
       } catch (error) {
         console.error(`💥 종목 검색 오류 (${cleanSymbol}):`, getErrorMessage(error))
         setFormData(prev => ({ ...prev, name: '', price: '' }))
-        
+
         // 사용자에게 친화적인 오류 메시지 표시 (선택적)
         // alert(`종목 조회 중 오류가 발생했습니다: ${error.message}`)
-        
       } finally {
         setSearchingStock(false)
       }
@@ -84,7 +88,7 @@ export function AddStockTransactionForm() {
   const handleTypeChange = (newType: 'buy' | 'sell' | 'existing') => {
     setFormData(prev => {
       let newPrice = prev.price
-      
+
       // 매매 구분이 바뀔 때 가격 처리
       if (newType !== 'existing' && currentPrice && (!prev.price || prev.price === '')) {
         // 매수/매도로 변경하고 현재가가 있으면 현재가를 입력
@@ -93,50 +97,50 @@ export function AddStockTransactionForm() {
         // 기존 보유로 변경하고 현재 입력값이 현재가와 같으면 초기화
         newPrice = ''
       }
-      
+
       return { ...prev, type: newType, price: newPrice }
     })
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const accountName = formData.account === '기타' ? customAccount : formData.account
     const existingStock = stocks.find(s => s.symbol === formData.symbol)
     const quantity = Number(formData.quantity)
     const price = Number(formData.price)
     const fee = Number(formData.fee || 0)
-    
+
     if (existingStock) {
       // 기존 주식 업데이트
       let newQuantity = existingStock.quantity
       let newAveragePrice = existingStock.averagePrice
-      
+
       if (formData.type === 'buy') {
-        const totalCost = (existingStock.quantity * existingStock.averagePrice) + (quantity * price)
+        const totalCost = existingStock.quantity * existingStock.averagePrice + quantity * price
         newQuantity = existingStock.quantity + quantity
         newAveragePrice = totalCost / newQuantity
       } else if (formData.type === 'sell') {
         newQuantity = Math.max(0, existingStock.quantity - quantity)
       } else if (formData.type === 'existing') {
         // 기존 보유 추가: 평균단가 재계산
-        const totalCost = (existingStock.quantity * existingStock.averagePrice) + (quantity * price)
+        const totalCost = existingStock.quantity * existingStock.averagePrice + quantity * price
         newQuantity = existingStock.quantity + quantity
         newAveragePrice = totalCost / newQuantity
       }
-      
+
       updateStock(existingStock.id, {
         quantity: newQuantity,
         averagePrice: newAveragePrice,
         currentPrice: currentPrice || price, // 현재가 우선, 없으면 입력가
         marketValue: newQuantity * (currentPrice || price),
-        unrealizedPnL: ((currentPrice || price) - newAveragePrice) * newQuantity
+        unrealizedPnL: ((currentPrice || price) - newAveragePrice) * newQuantity,
       })
     } else {
       // 새 주식 추가
       const actualCurrentPrice = currentPrice || price
       const actualQuantity = formData.type === 'sell' ? 0 : quantity
-      
+
       const newStock: Stock = {
         id: generateId(),
         symbol: formData.symbol,
@@ -151,9 +155,9 @@ export function AddStockTransactionForm() {
         weight: 0, // 나중에 전체 포트폴리오에서 계산
         sector: formData.sector,
         exchange: formData.exchange,
-        currency: ['KRX', 'BITHUMB'].includes(formData.exchange) ? 'KRW' : 'USD'
+        currency: ['KRX', 'BITHUMB'].includes(formData.exchange) ? 'KRW' : 'USD',
       }
-      
+
       addStock(newStock)
     }
 
@@ -171,7 +175,7 @@ export function AddStockTransactionForm() {
         fee: fee,
         tax: 0, // 세금 계산 로직 필요시 추가
         account: accountName,
-        memo: formData.memo
+        memo: formData.memo,
       }
       addStockTransaction(transaction)
     }
@@ -189,7 +193,7 @@ export function AddStockTransactionForm() {
       exchange: 'KRX',
       sector: '',
       memo: '',
-      account: ''
+      account: '',
     })
   }
 
@@ -204,18 +208,18 @@ export function AddStockTransactionForm() {
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>주식 매매 기록 추가</DialogTitle>
-          <DialogDescription>
-            종목 코드를 입력하면 자동으로 종목명과 현재가가 조회됩니다.
-          </DialogDescription>
+          <DialogDescription>종목 코드를 입력하면 자동으로 종목명과 현재가가 조회됩니다.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="tradeType" className="text-sm font-medium">매매 구분</label>
+            <label htmlFor="tradeType" className="text-sm font-medium">
+              매매 구분
+            </label>
             <select
               id="tradeType"
               name="tradeType"
               value={formData.type}
-              onChange={(e) => handleTypeChange(e.target.value as any)}
+              onChange={e => handleTypeChange(e.target.value as any)}
               className="w-full mt-1 px-3 py-2 border rounded-md"
               required
             >
@@ -226,17 +230,19 @@ export function AddStockTransactionForm() {
           </div>
 
           <div>
-            <label htmlFor="stockAccount" className="text-sm font-medium">거래 계좌</label>
+            <label htmlFor="stockAccount" className="text-sm font-medium">
+              거래 계좌
+            </label>
             <select
               id="stockAccount"
               name="stockAccount"
               value={formData.account}
-              onChange={(e) => setFormData({ ...formData, account: e.target.value })}
+              onChange={e => setFormData({ ...formData, account: e.target.value })}
               className="w-full mt-1 px-3 py-2 border rounded-md"
               required
             >
               <option value="">계좌를 선택하세요</option>
-              {cashAccounts.map((account) => (
+              {cashAccounts.map(account => (
                 <option key={account.id} value={account.bankName + ' - ' + account.accountType}>
                   {account.bankName} - {account.accountType} ({account.currency} {account.balance.toLocaleString()})
                 </option>
@@ -248,7 +254,7 @@ export function AddStockTransactionForm() {
                 className="mt-2"
                 value={customAccount}
                 placeholder="계좌명을 직접 입력하세요"
-                onChange={(e) => setCustomAccount(e.target.value)}
+                onChange={e => setCustomAccount(e.target.value)}
                 required
               />
             )}
@@ -256,13 +262,15 @@ export function AddStockTransactionForm() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="symbol" className="text-sm font-medium">종목 코드</label>
+              <label htmlFor="symbol" className="text-sm font-medium">
+                종목 코드
+              </label>
               <div className="relative">
                 <Input
                   id="symbol"
                   name="symbol"
                   value={formData.symbol}
-                  onChange={(e) => handleSymbolChange(e.target.value)}
+                  onChange={e => handleSymbolChange(e.target.value)}
                   placeholder="예: 005930, AAPL"
                   required
                 />
@@ -273,19 +281,19 @@ export function AddStockTransactionForm() {
                 )}
               </div>
               {formData.symbol.length >= 3 && !formData.name && !searchingStock && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  종목을 찾을 수 없습니다. 코드를 확인해주세요.
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">종목을 찾을 수 없습니다. 코드를 확인해주세요.</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="exchange" className="text-sm font-medium">거래소</label>
+              <label htmlFor="exchange" className="text-sm font-medium">
+                거래소
+              </label>
               <select
                 id="exchange"
                 name="exchange"
                 value={formData.exchange}
-                onChange={(e) => setFormData({ ...formData, exchange: e.target.value })}
+                onChange={e => setFormData({ ...formData, exchange: e.target.value })}
                 className="w-full mt-1 px-3 py-2 border rounded-md"
               >
                 <option value="KRX">한국거래소 (KRX)</option>
@@ -298,32 +306,34 @@ export function AddStockTransactionForm() {
           </div>
 
           <div>
-            <label htmlFor="stockName" className="text-sm font-medium">종목명</label>
+            <label htmlFor="stockName" className="text-sm font-medium">
+              종목명
+            </label>
             <Input
               id="stockName"
               name="stockName"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              placeholder={formData.symbol ? "자동 조회됩니다..." : "종목명을 입력하세요"}
+              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              placeholder={formData.symbol ? '자동 조회됩니다...' : '종목명을 입력하세요'}
               required
-              className={formData.name && formData.symbol ? "bg-green-50 border-green-200" : ""}
+              className={formData.name && formData.symbol ? 'bg-green-50 border-green-200' : ''}
             />
             {formData.name && formData.symbol && (
-              <p className="text-xs text-green-600 mt-1">
-                ✓ 종목이 자동으로 조회되었습니다
-              </p>
+              <p className="text-xs text-green-600 mt-1">✓ 종목이 자동으로 조회되었습니다</p>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="quantity" className="text-sm font-medium">수량</label>
+              <label htmlFor="quantity" className="text-sm font-medium">
+                수량
+              </label>
               <Input
                 id="quantity"
                 name="quantity"
                 type="number"
                 value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+                onChange={e => setFormData({ ...formData, quantity: e.target.value })}
                 placeholder="주 (소수점 가능)"
                 min="0"
                 step="0.00000001"
@@ -341,67 +351,75 @@ export function AddStockTransactionForm() {
                   name="stockPrice"
                   type="number"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  onChange={e => setFormData({ ...formData, price: e.target.value })}
                   placeholder={
-                    formData.type === 'existing' 
-                      ? `실제 매수한 ${['KRX', 'BITHUMB'].includes(formData.exchange) ? '원' : '달러'}` 
-                      : ['KRX', 'BITHUMB'].includes(formData.exchange) ? '원' : '달러'
+                    formData.type === 'existing'
+                      ? `실제 매수한 ${['KRX', 'BITHUMB'].includes(formData.exchange) ? '원' : '달러'}`
+                      : ['KRX', 'BITHUMB'].includes(formData.exchange)
+                        ? '원'
+                        : '달러'
                   }
                   min="0"
                   step="0.01"
                   required
                   className={
-                    formData.type === 'existing' 
-                      ? "bg-yellow-50 border-yellow-200" 
-                      : formData.price && formData.symbol && formData.name ? "bg-blue-50 border-blue-200" : ""
+                    formData.type === 'existing'
+                      ? 'bg-yellow-50 border-yellow-200'
+                      : formData.price && formData.symbol && formData.name
+                        ? 'bg-blue-50 border-blue-200'
+                        : ''
                   }
                 />
               </div>
-              
+
               {/* 현재가 정보 표시 */}
               {currentPrice && formData.symbol && formData.name && (
                 <div className="text-xs mt-1 space-y-1">
                   <p className="text-gray-600">
-                    📊 현재가: {currentPrice.toLocaleString()}{['KRX', 'BITHUMB'].includes(formData.exchange) ? '원' : '달러'}
+                    📊 현재가: {currentPrice.toLocaleString()}
+                    {['KRX', 'BITHUMB'].includes(formData.exchange) ? '원' : '달러'}
                   </p>
-                  
+
                   {formData.type === 'existing' && formData.price && (
-                    <p className={`font-medium ${
-                      Number(formData.price) < currentPrice ? 'text-green-600' : 
-                      Number(formData.price) > currentPrice ? 'text-red-600' : 'text-gray-600'
-                    }`}>
+                    <p
+                      className={`font-medium ${
+                        Number(formData.price) < currentPrice
+                          ? 'text-green-600'
+                          : Number(formData.price) > currentPrice
+                            ? 'text-red-600'
+                            : 'text-gray-600'
+                      }`}
+                    >
                       {Number(formData.price) < currentPrice && '📈 수익 '}
                       {Number(formData.price) > currentPrice && '📉 손실 '}
                       {Number(formData.price) === currentPrice && '➖ 동일 '}
                       {Math.abs(((currentPrice - Number(formData.price)) / Number(formData.price)) * 100).toFixed(2)}%
                     </p>
                   )}
-                  
+
                   {formData.type !== 'existing' && (
-                    <p className="text-blue-600">
-                      💡 {formData.type === 'buy' ? '매수' : '매도'}가로 현재가 사용됨
-                    </p>
+                    <p className="text-blue-600">💡 {formData.type === 'buy' ? '매수' : '매도'}가로 현재가 사용됨</p>
                   )}
                 </div>
               )}
-              
+
               {formData.type === 'existing' && !currentPrice && (
-                <p className="text-xs text-yellow-600 mt-1">
-                  ⚠️ 실제로 매수한 평균단가를 입력하세요
-                </p>
+                <p className="text-xs text-yellow-600 mt-1">⚠️ 실제로 매수한 평균단가를 입력하세요</p>
               )}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="fee" className="text-sm font-medium">수수료 (선택)</label>
+              <label htmlFor="fee" className="text-sm font-medium">
+                수수료 (선택)
+              </label>
               <Input
                 id="fee"
                 name="fee"
                 type="number"
                 value={formData.fee}
-                onChange={(e) => setFormData({ ...formData, fee: e.target.value })}
+                onChange={e => setFormData({ ...formData, fee: e.target.value })}
                 placeholder="0"
                 min="0"
                 step="0.01"
@@ -409,12 +427,14 @@ export function AddStockTransactionForm() {
             </div>
 
             <div>
-              <label htmlFor="sector" className="text-sm font-medium">섹터 (선택)</label>
+              <label htmlFor="sector" className="text-sm font-medium">
+                섹터 (선택)
+              </label>
               <select
                 id="sector"
                 name="sector"
                 value={formData.sector}
-                onChange={(e) => setFormData({ ...formData, sector: e.target.value })}
+                onChange={e => setFormData({ ...formData, sector: e.target.value })}
                 className="w-full mt-1 px-3 py-2 border rounded-md"
               >
                 <option value="">선택안함</option>
@@ -438,12 +458,14 @@ export function AddStockTransactionForm() {
           </div>
 
           <div>
-            <label htmlFor="tradeMemo" className="text-sm font-medium">메모 (선택)</label>
+            <label htmlFor="tradeMemo" className="text-sm font-medium">
+              메모 (선택)
+            </label>
             <Input
               id="tradeMemo"
               name="tradeMemo"
               value={formData.memo}
-              onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
+              onChange={e => setFormData({ ...formData, memo: e.target.value })}
               placeholder="거래 메모를 입력하세요"
             />
           </div>

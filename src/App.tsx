@@ -27,11 +27,11 @@ function App() {
   useEffect(() => {
     // 🛡️ 불멸 백업 시스템 최우선 활성화
     setupIndestructibleBackup()
-    
+
     // 기존 백업 시스템도 유지 (추가 보안)
     setupAutoBackup()
     setupDailyBackupScheduler()
-    
+
     console.log('🔒 모든 백업 시스템 활성화 완료')
   }, [])
 

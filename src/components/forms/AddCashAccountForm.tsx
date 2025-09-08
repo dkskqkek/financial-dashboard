@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { useAppStore } from '@/stores'
 import { generateId } from '@/lib/utils'
 import { Plus } from 'lucide-react'
@@ -16,12 +23,12 @@ export function AddCashAccountForm() {
     accountNumber: '',
     currency: 'KRW',
     balance: '',
-    memo: ''
+    memo: '',
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const newAccount: CashAccount = {
       id: generateId(),
       bankName: formData.bankName,
@@ -30,7 +37,7 @@ export function AddCashAccountForm() {
       currency: formData.currency,
       balance: Number(formData.balance),
       lastTransactionDate: new Date().toISOString().split('T')[0],
-      memo: formData.memo || undefined
+      memo: formData.memo || undefined,
     }
 
     addCashAccount(newAccount)
@@ -41,7 +48,7 @@ export function AddCashAccountForm() {
       accountNumber: '',
       currency: 'KRW',
       balance: '',
-      memo: ''
+      memo: '',
     })
   }
 
@@ -56,30 +63,32 @@ export function AddCashAccountForm() {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>새 계좌 추가</DialogTitle>
-          <DialogDescription>
-            현금 계좌 정보를 입력하여 자산 관리를 시작하세요.
-          </DialogDescription>
+          <DialogDescription>현금 계좌 정보를 입력하여 자산 관리를 시작하세요.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="accountBankName" className="text-sm font-medium">은행명</label>
+            <label htmlFor="accountBankName" className="text-sm font-medium">
+              은행명
+            </label>
             <Input
               id="accountBankName"
               name="accountBankName"
               value={formData.bankName}
-              onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
+              onChange={e => setFormData({ ...formData, bankName: e.target.value })}
               placeholder="은행명을 입력하세요"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="accountType" className="text-sm font-medium">계좌 종류</label>
+            <label htmlFor="accountType" className="text-sm font-medium">
+              계좌 종류
+            </label>
             <select
               id="accountType"
               name="accountType"
               value={formData.accountType}
-              onChange={(e) => setFormData({ ...formData, accountType: e.target.value })}
+              onChange={e => setFormData({ ...formData, accountType: e.target.value })}
               className="w-full mt-1 px-3 py-2 border rounded-md"
               required
             >
@@ -94,24 +103,28 @@ export function AddCashAccountForm() {
           </div>
 
           <div>
-            <label htmlFor="accountNumber" className="text-sm font-medium">계좌번호</label>
+            <label htmlFor="accountNumber" className="text-sm font-medium">
+              계좌번호
+            </label>
             <Input
               id="accountNumber"
               name="accountNumber"
               value={formData.accountNumber}
-              onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+              onChange={e => setFormData({ ...formData, accountNumber: e.target.value })}
               placeholder="계좌번호를 입력하세요"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="currency" className="text-sm font-medium">통화</label>
+            <label htmlFor="currency" className="text-sm font-medium">
+              통화
+            </label>
             <select
               id="currency"
               name="currency"
               value={formData.currency}
-              onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+              onChange={e => setFormData({ ...formData, currency: e.target.value })}
               className="w-full mt-1 px-3 py-2 border rounded-md"
             >
               <option value="KRW">원화 (KRW)</option>
@@ -122,25 +135,29 @@ export function AddCashAccountForm() {
           </div>
 
           <div>
-            <label htmlFor="balance" className="text-sm font-medium">잔액</label>
+            <label htmlFor="balance" className="text-sm font-medium">
+              잔액
+            </label>
             <Input
               id="balance"
               name="balance"
               type="number"
               value={formData.balance}
-              onChange={(e) => setFormData({ ...formData, balance: e.target.value })}
+              onChange={e => setFormData({ ...formData, balance: e.target.value })}
               placeholder="현재 잔액을 입력하세요"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="memo" className="text-sm font-medium">메모 (선택)</label>
+            <label htmlFor="memo" className="text-sm font-medium">
+              메모 (선택)
+            </label>
             <Input
               id="memo"
               name="memo"
               value={formData.memo}
-              onChange={(e) => setFormData({ ...formData, memo: e.target.value })}
+              onChange={e => setFormData({ ...formData, memo: e.target.value })}
               placeholder="메모를 입력하세요"
             />
           </div>
@@ -149,9 +166,7 @@ export function AddCashAccountForm() {
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               취소
             </Button>
-            <Button type="submit">
-              추가
-            </Button>
+            <Button type="submit">추가</Button>
           </div>
         </form>
       </DialogContent>

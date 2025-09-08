@@ -1,0 +1,141 @@
+name: 🐛 Bug Report
+description: 버그를 발견하셨나요? 알려주세요!
+title: "[BUG] "
+labels: ["🐛 bug", "📋 triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **버그 리포트를 작성해주셔서 감사합니다!** 🙏
+        
+        가능한 한 자세히 설명해주시면 더 빠르게 해결할 수 있습니다.
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: 🐛 버그 설명
+      description: 발견한 버그에 대해 명확하고 간결하게 설명해주세요.
+      placeholder: 예시) 로그인 후 대시보드 페이지가 로딩되지 않습니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: 🔄 재현 방법
+      description: 버그를 재현할 수 있는 단계별 방법을 알려주세요.
+      placeholder: |
+        1. '...'로 이동
+        2. '...'를 클릭
+        3. 스크롤하여 '...' 확인
+        4. 에러 발생
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: ✅ 예상 동작
+      description: 어떤 동작을 예상했는지 설명해주세요.
+      placeholder: 정상적으로 대시보드가 로딩되어야 합니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: ❌ 실제 동작
+      description: 실제로 어떤 일이 일어났는지 설명해주세요.
+      placeholder: 흰 화면만 나타나고 로딩이 멈춥니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 📸 스크린샷 / 동영상
+      description: 가능하다면 스크린샷이나 동영상을 첨부해주세요.
+      placeholder: 이미지를 드래그 앤 드롭하거나 붙여넣기 하세요.
+
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: 🌐 브라우저
+      description: 어떤 브라우저에서 발생했나요?
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Opera
+        - 기타 (아래에 명시)
+      multiple: true
+    validations:
+      required: true
+
+  - type: dropdown
+    id: devices
+    attributes:
+      label: 📱 기기
+      description: 어떤 기기에서 발생했나요?
+      options:
+        - Desktop
+        - Tablet
+        - Mobile
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: 💻 운영체제
+      description: 운영체제와 버전을 알려주세요.
+      placeholder: 예시) Windows 11, macOS 14.0, Ubuntu 22.04
+    validations:
+      required: true
+
+  - type: textarea
+    id: console-errors
+    attributes:
+      label: 🔧 콘솔 에러
+      description: 브라우저 개발자 도구에서 에러 메시지가 있다면 복사해주세요.
+      placeholder: |
+        F12를 눌러 개발자 도구를 열고 Console 탭에서 빨간색 에러 메시지를 복사해주세요.
+        
+        예시)
+        TypeError: Cannot read properties of undefined (reading 'data')
+            at Dashboard.tsx:123:45
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: ⚡ 우선순위
+      description: 이 버그의 심각도는 어느 정도인가요?
+      options:
+        - 🔴 Critical - 앱이 사용 불가능
+        - 🟠 High - 주요 기능이 작동하지 않음  
+        - 🟡 Medium - 일부 기능에 문제
+        - 🟢 Low - 사소한 UI 문제
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📋 추가 정보
+      description: 다른 관련 정보가 있다면 알려주세요.
+      placeholder: 예시) 특정 시간대에만 발생, 특정 데이터가 있을 때만 발생 등
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: ✅ 확인사항
+      description: 다음 사항들을 확인해주세요.
+      options:
+        - label: 중복된 이슈가 없는지 확인했습니다.
+          required: true
+        - label: 최신 버전에서도 동일한 문제가 발생합니다.
+          required: true
+        - label: 브라우저 캐시를 지우고 다시 시도했습니다.
+          required: true

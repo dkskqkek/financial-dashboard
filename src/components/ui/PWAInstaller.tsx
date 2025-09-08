@@ -26,7 +26,7 @@ export function PWAInstaller() {
       setShowInstallPrompt(true)
     }
 
-    // 앱 설치 완료 이벤트 리스너  
+    // 앱 설치 완료 이벤트 리스너
     const handleAppInstalled = () => {
       console.log('PWA 설치 완료')
       setIsInstalled(true)
@@ -58,12 +58,14 @@ export function PWAInstaller() {
   }, [])
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return
+    if (!deferredPrompt) {
+      return
+    }
 
     deferredPrompt.prompt()
-    
+
     const { outcome } = await deferredPrompt.userChoice
-    
+
     if (outcome === 'accepted') {
       console.log('사용자가 PWA 설치를 승인했습니다')
     } else {
@@ -86,7 +88,8 @@ export function PWAInstaller() {
     if (dismissed) {
       const dismissedTime = parseInt(dismissed)
       const now = Date.now()
-      if (now - dismissedTime < 24 * 60 * 60 * 1000) { // 24시간
+      if (now - dismissedTime < 24 * 60 * 60 * 1000) {
+        // 24시간
         setShowInstallPrompt(false)
       }
     }
@@ -112,38 +115,20 @@ export function PWAInstaller() {
                   <Smartphone className="w-5 h-5 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-sm mb-1">
-                    앱으로 설치하기
-                  </h3>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    홈 화면에 추가하여 더 빠르게 접근하세요
-                  </p>
+                  <h3 className="font-semibold text-sm mb-1">앱으로 설치하기</h3>
+                  <p className="text-xs text-muted-foreground mb-3">홈 화면에 추가하여 더 빠르게 접근하세요</p>
                   <div className="flex space-x-2">
-                    <Button 
-                      onClick={handleInstallClick}
-                      size="sm"
-                      className="pwa-install-button text-xs"
-                    >
+                    <Button onClick={handleInstallClick} size="sm" className="pwa-install-button text-xs">
                       <Download className="w-3 h-3 mr-1" />
                       설치
                     </Button>
-                    <Button 
-                      onClick={handleDismiss}
-                      variant="outline" 
-                      size="sm"
-                      className="text-xs"
-                    >
+                    <Button onClick={handleDismiss} variant="outline" size="sm" className="text-xs">
                       나중에
                     </Button>
                   </div>
                 </div>
               </div>
-              <Button
-                onClick={handleDismiss}
-                variant="ghost"
-                size="sm"
-                className="p-1 h-auto"
-              >
+              <Button onClick={handleDismiss} variant="ghost" size="sm" className="p-1 h-auto">
                 <X className="w-4 h-4" />
               </Button>
             </div>
@@ -153,11 +138,13 @@ export function PWAInstaller() {
 
       {/* 네트워크 상태 표시 (우상단) */}
       <div className="fixed top-4 right-4 z-40">
-        <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
-          isOnline 
-            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-            : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-        }`}>
+        <div
+          className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
+            isOnline
+              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+              : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+          }`}
+        >
           {isOnline ? (
             <>
               <Wifi className="w-3 h-3" />

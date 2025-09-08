@@ -7,40 +7,23 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
-  Plus,
-  Search,
-  Filter,
-  Download,
-  Edit,
-  Trash2,
-  Wallet,
-  Building,
-  CreditCard,
-} from 'lucide-react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Plus, Search, Filter, Download, Edit, Trash2, Wallet, Building, CreditCard } from 'lucide-react'
 import { AddCashAccountForm } from '@/components/forms/AddCashAccountForm'
 import { formatCurrency, formatDate, maskAccountNumber } from '@/lib/utils'
 import type { CashAccount } from '@/types'
 
 export function AssetsPage() {
-  const { 
-    cashAccounts, 
-    setCashAccounts, 
-    deleteCashAccount, 
-    updateCashAccount, 
-    isLoading, 
+  const {
+    cashAccounts,
+    setCashAccounts,
+    deleteCashAccount,
+    updateCashAccount,
+    isLoading,
     setIsLoading,
     exchangeRate,
     updateExchangeRate,
-    convertToKrwTotal
+    convertToKrwTotal,
   } = useAppStore()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState<string>('all')
@@ -56,7 +39,7 @@ export function AssetsPage() {
     accountType: '',
     accountNumber: '',
     balance: '',
-    memo: ''
+    memo: '',
   })
 
   // 페이지 로드 시 환율 업데이트 및 총 잔액 계산
@@ -66,11 +49,11 @@ export function AssetsPage() {
       if (!exchangeRate) {
         await updateExchangeRate()
       }
-      
+
       // 총 잔액 계산 (환율 변환 적용)
       updateTotalBalance()
     }
-    
+
     initializeData()
   }, [])
 
@@ -83,7 +66,7 @@ export function AssetsPage() {
     if (cashAccounts.length > 0) {
       const total = await convertToKrwTotal(filteredAccounts)
       setTotalBalance(total)
-      
+
       // USD 계좌 총액 계산 (KRW 변환)
       const usdAccounts = filteredAccounts.filter(acc => acc.currency === 'USD')
       let usdTotal = 0
@@ -91,7 +74,7 @@ export function AssetsPage() {
         usdTotal += await exchangeRateService.convertUsdToKrw(account.balance)
       }
       setUsdTotalInKrw(usdTotal)
-      
+
       // 은행별 총액 계산
       const banks = Array.from(new Set(cashAccounts.map(acc => acc.bankName)))
       const bankTotalsMap: Record<string, number> = {}
@@ -100,7 +83,7 @@ export function AssetsPage() {
         bankTotalsMap[bankName] = await convertToKrwTotal(bankAccounts)
       }
       setBankTotals(bankTotalsMap)
-      
+
       // 계좌 유형별 총액 계산
       const types = Array.from(new Set(cashAccounts.map(acc => acc.accountType)))
       const typeTotalsMap: Record<string, number> = {}
@@ -132,14 +115,16 @@ export function AssetsPage() {
       accountType: account.accountType,
       accountNumber: account.accountNumber,
       balance: account.balance.toString(),
-      memo: account.memo || ''
+      memo: account.memo || '',
     })
     setEditModalOpen(true)
   }
 
   // 계좌 수정 저장
   const handleSaveEdit = () => {
-    if (!editingAccount) return
+    if (!editingAccount) {
+      return
+    }
 
     const updatedAccount = {
       ...editingAccount,
@@ -147,7 +132,7 @@ export function AssetsPage() {
       accountType: editFormData.accountType,
       accountNumber: editFormData.accountNumber,
       balance: Number(editFormData.balance),
-      memo: editFormData.memo
+      memo: editFormData.memo,
     }
 
     updateCashAccount(editingAccount.id, updatedAccount)
@@ -164,18 +149,18 @@ export function AssetsPage() {
       accountType: '',
       accountNumber: '',
       balance: '',
-      memo: ''
+      memo: '',
     })
   }
 
   const filteredAccounts = cashAccounts.filter(account => {
-    const matchesSearch = 
+    const matchesSearch =
       account.bankName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       account.accountType.toLowerCase().includes(searchTerm.toLowerCase()) ||
       account.accountNumber.includes(searchTerm)
-    
+
     const matchesType = selectedType === 'all' || account.accountType === selectedType
-    
+
     return matchesSearch && matchesType
   })
 
@@ -190,15 +175,16 @@ export function AssetsPage() {
       <div className="flex flex-col space-y-2 sm:space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
         <div className="space-y-1">
           <h1 className="mobile-title">자산 상세</h1>
-          <p className="mobile-subtitle mobile-text-wrap">
-            현금성 자산 통합 관리
-          </p>
+          <p className="mobile-subtitle mobile-text-wrap">현금성 자산 통합 관리</p>
         </div>
-        
+
         <div className="flex items-center space-x-2">
-          <Button variant="outline" onClick={() => {
-            alert('데이터 내보내기 기능은 준비 중입니다.')
-          }}>
+          <Button
+            variant="outline"
+            onClick={() => {
+              alert('데이터 내보내기 기능은 준비 중입니다.')
+            }}
+          >
             <Download className="h-4 w-4 mr-2" />
             내보내기
           </Button>
@@ -215,9 +201,7 @@ export function AssetsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold currency">{formatCurrency(totalBalance)}</div>
-            <p className="text-xs text-muted-foreground">
-              {filteredAccounts.length}개 계좌
-            </p>
+            <p className="text-xs text-muted-foreground">{filteredAccounts.length}개 계좌</p>
           </CardContent>
         </Card>
 
@@ -229,9 +213,7 @@ export function AssetsPage() {
           <CardContent>
             <div className="text-2xl font-bold currency">
               {formatCurrency(
-                filteredAccounts
-                  .filter(acc => acc.currency === 'KRW')
-                  .reduce((sum, acc) => sum + acc.balance, 0)
+                filteredAccounts.filter(acc => acc.currency === 'KRW').reduce((sum, acc) => sum + acc.balance, 0)
               )}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -246,9 +228,7 @@ export function AssetsPage() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold currency">
-              {formatCurrency(usdTotalInKrw)}
-            </div>
+            <div className="text-2xl font-bold currency">{formatCurrency(usdTotalInKrw)}</div>
             <p className="text-xs text-muted-foreground">
               {filteredAccounts.filter(acc => acc.currency === 'USD').length}개 계좌
             </p>
@@ -266,7 +246,7 @@ export function AssetsPage() {
               <Input
                 placeholder="계좌번호, 은행명으로 검색..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -278,7 +258,7 @@ export function AssetsPage() {
               >
                 전체
               </Button>
-              {accountTypes.map((type) => (
+              {accountTypes.map(type => (
                 <Button
                   key={type}
                   variant={selectedType === type ? 'default' : 'outline'}
@@ -306,7 +286,7 @@ export function AssetsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAccounts.map((account) => (
+              {filteredAccounts.map(account => (
                 <TableRow
                   key={account.id}
                   className="hover:bg-muted/50 cursor-pointer"
@@ -323,39 +303,33 @@ export function AssetsPage() {
                   <TableCell>
                     <Badge variant="outline">{account.accountType}</Badge>
                   </TableCell>
-                  <TableCell className="font-mono">
-                    {maskAccountNumber(account.accountNumber)}
-                  </TableCell>
+                  <TableCell className="font-mono">{maskAccountNumber(account.accountNumber)}</TableCell>
                   <TableCell>
-                    <Badge variant={account.currency === 'KRW' ? 'default' : 'secondary'}>
-                      {account.currency}
-                    </Badge>
+                    <Badge variant={account.currency === 'KRW' ? 'default' : 'secondary'}>{account.currency}</Badge>
                   </TableCell>
                   <TableCell className="text-right font-mono">
-                    {account.currency === 'KRW' 
+                    {account.currency === 'KRW'
                       ? formatCurrency(account.balance)
                       : `$${account.balance.toLocaleString()}`}
                   </TableCell>
                   <TableCell>{formatDate(account.lastTransactionDate)}</TableCell>
-                  <TableCell className="max-w-32 truncate">
-                    {account.memo || '-'}
-                  </TableCell>
+                  <TableCell className="max-w-32 truncate">{account.memo || '-'}</TableCell>
                   <TableCell className="text-center">
                     <div className="flex justify-center space-x-1">
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="sm"
-                        onClick={(e) => {
+                        onClick={e => {
                           e.stopPropagation()
                           handleEditAccount(account)
                         }}
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         size="sm"
-                        onClick={(e) => {
+                        onClick={e => {
                           e.stopPropagation()
                           if (window.confirm(`${account.bankName} ${account.accountType} 계좌를 삭제하시겠습니까?`)) {
                             deleteCashAccount(account.id)
@@ -371,24 +345,23 @@ export function AssetsPage() {
               ))}
             </TableBody>
           </Table>
-          
+
           {filteredAccounts.length === 0 && (
             <div className="text-center py-12">
               <Wallet className="mx-auto h-12 w-12 text-muted-foreground" />
-              <p className="mt-4 text-lg font-medium text-muted-foreground">
-                계좌가 없습니다
-              </p>
-              <p className="text-sm text-muted-foreground">
-                첫 번째 계좌를 추가해보세요
-              </p>
-              <Button className="mt-4" onClick={() => {
-                const addButton = document.querySelector('[data-testid="add-account-trigger"]') as HTMLButtonElement
-                if (addButton) {
-                  addButton.click()
-                } else {
-                  alert('계좌 추가 기능을 사용하려면 상단의 "계좌 추가" 버튼을 클릭하세요.')
-                }
-              }}>
+              <p className="mt-4 text-lg font-medium text-muted-foreground">계좌가 없습니다</p>
+              <p className="text-sm text-muted-foreground">첫 번째 계좌를 추가해보세요</p>
+              <Button
+                className="mt-4"
+                onClick={() => {
+                  const addButton = document.querySelector('[data-testid="add-account-trigger"]') as HTMLButtonElement
+                  if (addButton) {
+                    addButton.click()
+                  } else {
+                    alert('계좌 추가 기능을 사용하려면 상단의 "계좌 추가" 버튼을 클릭하세요.')
+                  }
+                }}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 계좌 추가하기
               </Button>
@@ -459,63 +432,71 @@ export function AssetsPage() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>계좌 정보 수정</DialogTitle>
-            <DialogDescription>
-              현금 계좌의 정보를 수정할 수 있습니다.
-            </DialogDescription>
+            <DialogDescription>현금 계좌의 정보를 수정할 수 있습니다.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label htmlFor="bankName" className="text-sm font-medium">은행명</label>
+              <label htmlFor="bankName" className="text-sm font-medium">
+                은행명
+              </label>
               <Input
                 id="bankName"
                 value={editFormData.bankName}
-                onChange={(e) => setEditFormData({ ...editFormData, bankName: e.target.value })}
+                onChange={e => setEditFormData({ ...editFormData, bankName: e.target.value })}
                 placeholder="은행명을 입력하세요"
               />
             </div>
-            
+
             <div>
-              <label htmlFor="accountType" className="text-sm font-medium">계좌 유형</label>
+              <label htmlFor="accountType" className="text-sm font-medium">
+                계좌 유형
+              </label>
               <Input
                 id="accountType"
                 value={editFormData.accountType}
-                onChange={(e) => setEditFormData({ ...editFormData, accountType: e.target.value })}
+                onChange={e => setEditFormData({ ...editFormData, accountType: e.target.value })}
                 placeholder="계좌 유형을 입력하세요"
               />
             </div>
-            
+
             <div>
-              <label htmlFor="accountNumber" className="text-sm font-medium">계좌번호</label>
+              <label htmlFor="accountNumber" className="text-sm font-medium">
+                계좌번호
+              </label>
               <Input
                 id="accountNumber"
                 value={editFormData.accountNumber}
-                onChange={(e) => setEditFormData({ ...editFormData, accountNumber: e.target.value })}
+                onChange={e => setEditFormData({ ...editFormData, accountNumber: e.target.value })}
                 placeholder="계좌번호를 입력하세요"
               />
             </div>
-            
+
             <div>
-              <label htmlFor="balance" className="text-sm font-medium">잔액</label>
+              <label htmlFor="balance" className="text-sm font-medium">
+                잔액
+              </label>
               <Input
                 id="balance"
                 type="number"
                 value={editFormData.balance}
-                onChange={(e) => setEditFormData({ ...editFormData, balance: e.target.value })}
+                onChange={e => setEditFormData({ ...editFormData, balance: e.target.value })}
                 placeholder="잔액을 입력하세요"
               />
             </div>
-            
+
             <div>
-              <label htmlFor="memo" className="text-sm font-medium">메모</label>
+              <label htmlFor="memo" className="text-sm font-medium">
+                메모
+              </label>
               <Input
                 id="memo"
                 value={editFormData.memo}
-                onChange={(e) => setEditFormData({ ...editFormData, memo: e.target.value })}
+                onChange={e => setEditFormData({ ...editFormData, memo: e.target.value })}
                 placeholder="메모를 입력하세요 (선택사항)"
               />
             </div>
           </div>
-          
+
           <div className="flex justify-end space-x-2 pt-4">
             <Button type="button" variant="outline" onClick={handleCancelEdit}>
               취소

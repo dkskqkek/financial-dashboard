@@ -4,16 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-  Save,
-  Download,
-  Upload,
-  Trash2,
-  RefreshCw,
-  Database,
-  AlertTriangle,
-  CheckCircle
-} from 'lucide-react'
+import { Save, Download, Upload, Trash2, RefreshCw, Database, AlertTriangle, CheckCircle } from 'lucide-react'
 
 interface BackupData {
   timestamp: string
@@ -99,7 +90,9 @@ export function BackupManager() {
   // 백업 가져오기
   const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (!file) return
+    if (!file) {
+      return
+    }
 
     setIsLoading(true)
     try {
@@ -228,123 +221,103 @@ export function BackupManager() {
             <>
               {/* 백업 제어 버튼들 */}
               <div className="flex flex-wrap gap-2 p-4 bg-muted/50 rounded-lg">
-            <Button 
-              onClick={handleCreateBackup} 
-              disabled={isLoading}
-              size="sm"
-            >
-              <Save className="h-4 w-4 mr-2" />
-              수동 백업 생성
-            </Button>
-            
-            <Button 
-              onClick={refreshBackups} 
-              variant="outline" 
-              size="sm"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              새로고침
-            </Button>
+                <Button onClick={handleCreateBackup} disabled={isLoading} size="sm">
+                  <Save className="h-4 w-4 mr-2" />
+                  수동 백업 생성
+                </Button>
 
-            <div className="relative">
-              <input
-                type="file"
-                accept=".json"
-                onChange={handleImport}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                disabled={isLoading}
-              />
-              <Button variant="outline" size="sm">
-                <Upload className="h-4 w-4 mr-2" />
-                백업 파일 가져오기
-              </Button>
-            </div>
-          </div>
+                <Button onClick={refreshBackups} variant="outline" size="sm">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  새로고침
+                </Button>
 
-          {/* 백업 안내 */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
-                자동 백업 활성화
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              <p>• 데이터 변경 후 5초마다 자동으로 백업됩니다</p>
-              <p>• 최대 10개의 백업이 로컬에 보관됩니다</p>
-              <p>• 복구 시 현재 데이터는 자동으로 백업됩니다</p>
-            </CardContent>
-          </Card>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={handleImport}
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    disabled={isLoading}
+                  />
+                  <Button variant="outline" size="sm">
+                    <Upload className="h-4 w-4 mr-2" />
+                    백업 파일 가져오기
+                  </Button>
+                </div>
+              </div>
 
-          {/* 백업 목록 */}
-          <div className="space-y-3">
-            <h3 className="font-medium">백업 목록 ({backups.length}개)</h3>
-            
-            {backups.length === 0 ? (
+              {/* 백업 안내 */}
               <Card>
-                <CardContent className="text-center py-8 text-muted-foreground">
-                  <Database className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>저장된 백업이 없습니다</p>
-                  <p className="text-xs mt-1">데이터를 입력하면 자동으로 백업됩니다</p>
+                <CardHeader>
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    자동 백업 활성화
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  <p>• 데이터 변경 후 5초마다 자동으로 백업됩니다</p>
+                  <p>• 최대 10개의 백업이 로컬에 보관됩니다</p>
+                  <p>• 복구 시 현재 데이터는 자동으로 백업됩니다</p>
                 </CardContent>
               </Card>
-            ) : (
-              backups.map((backup, index) => (
-                <Card key={`${backup.timestamp}-${index}`}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium">
-                            백업 #{backups.length - index}
-                          </p>
-                          {index === 0 && (
-                            <Badge variant="secondary">최신</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {formatDate(backup.timestamp)}
-                        </p>
-                        <div className="text-xs text-muted-foreground">
-                          버전: {backup.version || '1.0.0'}
-                        </div>
-                      </div>
 
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRestore(index)}
-                          disabled={isLoading}
-                        >
-                          <RefreshCw className="h-3 w-3 mr-1" />
-                          복구
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleExport(index)}
-                        >
-                          <Download className="h-3 w-3 mr-1" />
-                          내보내기
-                        </Button>
-                        
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDelete(index)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
+              {/* 백업 목록 */}
+              <div className="space-y-3">
+                <h3 className="font-medium">백업 목록 ({backups.length}개)</h3>
+
+                {backups.length === 0 ? (
+                  <Card>
+                    <CardContent className="text-center py-8 text-muted-foreground">
+                      <Database className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                      <p>저장된 백업이 없습니다</p>
+                      <p className="text-xs mt-1">데이터를 입력하면 자동으로 백업됩니다</p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  backups.map((backup, index) => (
+                    <Card key={`${backup.timestamp}-${index}`}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium">백업 #{backups.length - index}</p>
+                              {index === 0 && <Badge variant="secondary">최신</Badge>}
+                            </div>
+                            <p className="text-sm text-muted-foreground">{formatDate(backup.timestamp)}</p>
+                            <div className="text-xs text-muted-foreground">버전: {backup.version || '1.0.0'}</div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleRestore(index)}
+                              disabled={isLoading}
+                            >
+                              <RefreshCw className="h-3 w-3 mr-1" />
+                              복구
+                            </Button>
+
+                            <Button variant="outline" size="sm" onClick={() => handleExport(index)}>
+                              <Download className="h-3 w-3 mr-1" />
+                              내보내기
+                            </Button>
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDelete(index)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
             </>
           )}
 
@@ -353,20 +326,12 @@ export function BackupManager() {
             <>
               {/* 일일 백업 제어 버튼들 */}
               <div className="flex flex-wrap gap-2 p-4 bg-muted/50 rounded-lg">
-                <Button 
-                  onClick={handleCreateDailyBackup} 
-                  disabled={isLoading}
-                  size="sm"
-                >
+                <Button onClick={handleCreateDailyBackup} disabled={isLoading} size="sm">
                   <Save className="h-4 w-4 mr-2" />
                   오늘 백업 생성
                 </Button>
-                
-                <Button 
-                  onClick={refreshBackups} 
-                  variant="outline" 
-                  size="sm"
-                >
+
+                <Button onClick={refreshBackups} variant="outline" size="sm">
                   <RefreshCw className="h-4 w-4 mr-2" />
                   새로고침
                 </Button>
@@ -390,7 +355,7 @@ export function BackupManager() {
               {/* 일일 백업 목록 */}
               <div className="space-y-3">
                 <h3 className="font-medium">일일 백업 목록 ({dailyBackups.length}개)</h3>
-                
+
                 {dailyBackups.length === 0 ? (
                   <Card>
                     <CardContent className="text-center py-8 text-muted-foreground">
@@ -406,19 +371,11 @@ export function BackupManager() {
                         <div className="flex items-center justify-between">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <p className="font-medium">
-                                {formatDateOnly(backup.timestamp)} 백업
-                              </p>
-                              {index === 0 && (
-                                <Badge variant="secondary">최신</Badge>
-                              )}
+                              <p className="font-medium">{formatDateOnly(backup.timestamp)} 백업</p>
+                              {index === 0 && <Badge variant="secondary">최신</Badge>}
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                              생성 시간: {formatDate(backup.timestamp)}
-                            </p>
-                            <div className="text-xs text-muted-foreground">
-                              버전: {backup.version || '1.0.0'}
-                            </div>
+                            <p className="text-sm text-muted-foreground">생성 시간: {formatDate(backup.timestamp)}</p>
+                            <div className="text-xs text-muted-foreground">버전: {backup.version || '1.0.0'}</div>
                           </div>
 
                           <div className="flex gap-2">
@@ -431,16 +388,12 @@ export function BackupManager() {
                               <RefreshCw className="h-3 w-3 mr-1" />
                               복구
                             </Button>
-                            
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDailyExport(index)}
-                            >
+
+                            <Button variant="outline" size="sm" onClick={() => handleDailyExport(index)}>
                               <Download className="h-3 w-3 mr-1" />
                               내보내기
                             </Button>
-                            
+
                             <Button
                               variant="outline"
                               size="sm"

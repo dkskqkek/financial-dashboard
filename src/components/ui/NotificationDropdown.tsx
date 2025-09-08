@@ -28,7 +28,7 @@ const mockNotifications: Notification[] = [
     time: '5분 전',
     read: false,
     icon: <TrendingUp className="h-4 w-4 text-green-500" />,
-    priority: 'high'
+    priority: 'high',
   },
   {
     id: '2',
@@ -38,7 +38,7 @@ const mockNotifications: Notification[] = [
     time: '1시간 전',
     read: false,
     icon: <CheckCircle className="h-4 w-4 text-blue-500" />,
-    priority: 'medium'
+    priority: 'medium',
   },
   {
     id: '3',
@@ -48,8 +48,8 @@ const mockNotifications: Notification[] = [
     time: '2시간 전',
     read: true,
     icon: <TrendingDown className="h-4 w-4 text-red-500" />,
-    priority: 'high'
-  }
+    priority: 'high',
+  },
 ]
 
 export function NotificationDropdown() {
@@ -86,12 +86,7 @@ export function NotificationDropdown() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">알림</CardTitle>
               {unreadCount > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-xs h-auto p-1 px-2"
-                  onClick={markAllAsRead}
-                >
+                <Button variant="ghost" size="sm" className="text-xs h-auto p-1 px-2" onClick={markAllAsRead}>
                   모두 읽음
                 </Button>
               )}
@@ -100,12 +95,10 @@ export function NotificationDropdown() {
           <CardContent className="p-0">
             <ScrollArea className="h-80">
               {mockNotifications.length === 0 ? (
-                <div className="p-4 text-center text-sm text-muted-foreground">
-                  새로운 알림이 없습니다.
-                </div>
+                <div className="p-4 text-center text-sm text-muted-foreground">새로운 알림이 없습니다.</div>
               ) : (
                 <div className="space-y-1">
-                  {mockNotifications.map((notification) => (
+                  {mockNotifications.map(notification => (
                     <div
                       key={notification.id}
                       className={`px-4 py-3 hover:bg-muted/50 cursor-pointer border-b last:border-b-0 ${
@@ -114,29 +107,23 @@ export function NotificationDropdown() {
                       onClick={() => markAsRead(notification.id)}
                     >
                       <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 mt-0.5">
-                          {notification.icon}
-                        </div>
+                        <div className="flex-shrink-0 mt-0.5">{notification.icon}</div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
-                            <p className={`text-sm font-medium ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}>
+                            <p
+                              className={`text-sm font-medium ${!notification.read ? 'text-foreground' : 'text-muted-foreground'}`}
+                            >
                               {notification.title}
                             </p>
                             <div className="flex items-center space-x-2">
                               {notification.priority === 'high' && (
                                 <AlertTriangle className="h-3 w-3 text-orange-500" />
                               )}
-                              {!notification.read && (
-                                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                              )}
+                              {!notification.read && <div className="w-2 h-2 bg-blue-500 rounded-full"></div>}
                             </div>
                           </div>
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                            {notification.message}
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {notification.time}
-                          </p>
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{notification.message}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
                         </div>
                       </div>
                     </div>

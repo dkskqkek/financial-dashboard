@@ -44,14 +44,12 @@ export function MarketOverview({ marketData }: MarketOverviewProps) {
             실시간
           </Badge>
         </CardTitle>
-        <p className="text-xs sm:text-sm text-muted-foreground mobile-text">
-          주요 지수 및 환율 현황
-        </p>
+        <p className="text-xs sm:text-sm text-muted-foreground mobile-text">주요 지수 및 환율 현황</p>
       </CardHeader>
-      
+
       <CardContent className="px-3 pb-3">
         <div className="space-y-3">
-          {markets.map((market) => (
+          {markets.map(market => (
             <div
               key={market.name}
               className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 p-2 sm:p-3 rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors"
@@ -65,18 +63,14 @@ export function MarketOverview({ marketData }: MarketOverviewProps) {
                     <TrendingDown className="h-3 w-3 sm:h-4 sm:w-4 text-destructive flex-shrink-0" />
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1 mobile-text">
-                  {market.description}
-                </p>
+                <p className="text-xs text-muted-foreground mt-1 mobile-text">{market.description}</p>
               </div>
-              
+
               <div className="text-left sm:text-right">
                 <div className="text-base sm:text-lg font-bold currency break-all">
-                  {market.isExchangeRate
-                    ? `₩${formatNumber(market.value)}`
-                    : formatNumber(market.value, 2)}
+                  {market.isExchangeRate ? `₩${formatNumber(market.value)}` : formatNumber(market.value, 2)}
                 </div>
-                
+
                 <div className="flex items-center sm:justify-end space-x-1 mt-1 flex-wrap">
                   <Badge
                     variant={market.changePercent > 0 ? 'success' : 'destructive'}
@@ -96,42 +90,25 @@ export function MarketOverview({ marketData }: MarketOverviewProps) {
             </div>
           ))}
         </div>
-        
+
         {/* 시장 요약 */}
         <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t">
-          <div className="text-xs sm:text-sm text-muted-foreground mb-2 mobile-text">
-            시장 상황 요약
-          </div>
+          <div className="text-xs sm:text-sm text-muted-foreground mb-2 mobile-text">시장 상황 요약</div>
           <div className="text-xs sm:text-sm space-y-1">
             {marketData.kospi.changePercent > 0 && marketData.sp500.changePercent > 0 && (
-              <p className="text-success mobile-text">
-                ✓ 국내외 주식시장 모두 상승세
-              </p>
+              <p className="text-success mobile-text">✓ 국내외 주식시장 모두 상승세</p>
             )}
             {marketData.kospi.changePercent < 0 && marketData.sp500.changePercent < 0 && (
-              <p className="text-destructive mobile-text">
-                ⚠ 국내외 주식시장 모두 하락세
-              </p>
+              <p className="text-destructive mobile-text">⚠ 국내외 주식시장 모두 하락세</p>
             )}
-            {marketData.usdKrw.changePercent > 2 && (
-              <p className="text-warning mobile-text">
-                ⚠ 환율 급등 (2%↑)
-              </p>
-            )}
-            {marketData.usdKrw.changePercent < -2 && (
-              <p className="text-success mobile-text">
-                ✓ 원화 강세 (2%↓)
-              </p>
-            )}
-            {Math.abs(marketData.kospi.changePercent) < 1 && 
-             Math.abs(marketData.sp500.changePercent) < 1 && (
-              <p className="text-muted-foreground mobile-text">
-                ≡ 주식시장 보합세 유지
-              </p>
+            {marketData.usdKrw.changePercent > 2 && <p className="text-warning mobile-text">⚠ 환율 급등 (2%↑)</p>}
+            {marketData.usdKrw.changePercent < -2 && <p className="text-success mobile-text">✓ 원화 강세 (2%↓)</p>}
+            {Math.abs(marketData.kospi.changePercent) < 1 && Math.abs(marketData.sp500.changePercent) < 1 && (
+              <p className="text-muted-foreground mobile-text">≡ 주식시장 보합세 유지</p>
             )}
           </div>
         </div>
-        
+
         {/* 마지막 업데이트 시간 */}
         <div className="mt-3 sm:mt-4 text-xs text-muted-foreground text-center mobile-text">
           {marketData.kospi.isRealTime || marketData.sp500.isRealTime ? (

@@ -53,13 +53,8 @@ export function Sidebar() {
               <p className="text-xs text-muted-foreground">개인 자산 관리</p>
             </div>
           </div>
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden"
-          >
+
+          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="lg:hidden">
             <ChevronLeft className="h-4 w-4" />
           </Button>
         </div>
@@ -74,19 +69,15 @@ export function Sidebar() {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">
-                {user?.name || '사용자'}
-              </p>
-              <p className="text-xs text-muted-foreground truncate">
-                {user?.email || 'user@example.com'}
-              </p>
+              <p className="text-sm font-medium truncate">{user?.name || '사용자'}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email || 'user@example.com'}</p>
             </div>
           </div>
         </div>
 
         {/* 네비게이션 */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navigation.map((item) => {
+          {navigation.map(item => {
             const isActive = location.pathname === item.href
             return (
               <NavLink
@@ -104,9 +95,7 @@ export function Sidebar() {
                 <item.icon
                   className={cn(
                     'mr-3 h-4 w-4 transition-colors',
-                    isActive
-                      ? 'text-primary-foreground'
-                      : 'text-muted-foreground group-hover:text-accent-foreground'
+                    isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-accent-foreground'
                   )}
                 />
                 {item.name}

@@ -4,31 +4,28 @@ export const clearAllCache = async () => {
   try {
     // 1. localStorage 클리어
     localStorage.clear()
-    
+
     // 2. sessionStorage 클리어
     sessionStorage.clear()
-    
+
     // 3. Service Worker 캐시 클리어
     if ('serviceWorker' in navigator) {
       const registrations = await navigator.serviceWorker.getRegistrations()
-      for (let registration of registrations) {
+      for (const registration of registrations) {
         await registration.unregister()
       }
     }
-    
+
     // 4. Cache API 클리어
     if ('caches' in window) {
       const cacheNames = await caches.keys()
-      await Promise.all(
-        cacheNames.map(cacheName => caches.delete(cacheName))
-      )
+      await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)))
     }
-    
+
     console.log('✅ 모든 캐시가 초기화되었습니다')
-    
+
     // 5. 페이지 새로고침
     window.location.reload()
-    
   } catch (error) {
     console.error('❌ 캐시 초기화 실패:', error)
   }
@@ -39,12 +36,12 @@ export const devCacheClear = () => {
   if (import.meta.env.DEV) {
     const lastClearTime = localStorage.getItem('last-cache-clear')
     const now = Date.now()
-    
+
     // 1시간마다 캐시 클리어 (개발 모드)
     if (!lastClearTime || now - parseInt(lastClearTime) > 60 * 60 * 1000) {
       console.log('🧹 개발 모드 캐시 자동 초기화')
       localStorage.setItem('last-cache-clear', now.toString())
-      
+
       // API 캐시만 클리어 (페이지 새로고침 없이)
       if ('caches' in window) {
         caches.keys().then(cacheNames => {
@@ -69,41 +66,41 @@ export const fetchWithoutCache = async (url: string, options?: RequestInit) => {
     const separator = url.includes('?') ? '&' : '?'
     finalUrl = `${url}${separator}_t=${timestamp}&_cache=bust`
   }
-  
+
   return fetch(finalUrl, {
     ...options,
     headers: {
       ...options?.headers,
       'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
+      Pragma: 'no-cache',
+      Expires: '0',
     },
-    cache: 'no-cache'
+    cache: 'no-cache',
   })
 }
 
 // 디버깅용 캐시 정보 출력
 export const debugCacheInfo = async () => {
   console.log('🔍 캐시 디버그 정보:')
-  
+
   // localStorage
   console.log('📦 localStorage 크기:', Object.keys(localStorage).length)
-  
-  // sessionStorage  
+
+  // sessionStorage
   console.log('📦 sessionStorage 크기:', Object.keys(sessionStorage).length)
-  
+
   // Cache API
   if ('caches' in window) {
     const cacheNames = await caches.keys()
     console.log('📦 브라우저 캐시:', cacheNames)
-    
+
     for (const cacheName of cacheNames) {
       const cache = await caches.open(cacheName)
       const requests = await cache.keys()
       console.log(`  - ${cacheName}: ${requests.length}개 항목`)
     }
   }
-  
+
   // Service Worker
   if ('serviceWorker' in navigator) {
     const registrations = await navigator.serviceWorker.getRegistrations()

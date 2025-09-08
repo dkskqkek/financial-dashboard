@@ -72,8 +72,8 @@ export function MonthlyPage() {
                 <BarChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
-                  <YAxis tickFormatter={(value) => formatCurrency(value).slice(0, -1)} />
-                  <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                  <YAxis tickFormatter={value => formatCurrency(value).slice(0, -1)} />
+                  <Tooltip formatter={value => formatCurrency(value as number)} />
                   <Bar dataKey="income" fill="#10B981" name="수입" />
                   <Bar dataKey="expense" fill="#EF4444" name="지출" />
                 </BarChart>
@@ -92,8 +92,8 @@ export function MonthlyPage() {
                 <LineChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
-                  <YAxis tickFormatter={(value) => formatCurrency(value).slice(0, -3) + 'M'} />
-                  <Tooltip formatter={(value) => formatCurrency(value as number)} />
+                  <YAxis tickFormatter={value => formatCurrency(value).slice(0, -3) + 'M'} />
+                  <Tooltip formatter={value => formatCurrency(value as number)} />
                   <Line type="monotone" dataKey="assets" stroke="#1E3A8A" strokeWidth={3} />
                 </LineChart>
               </ResponsiveContainer>
@@ -112,8 +112,12 @@ export function MonthlyPage() {
               <TrendingUp className="h-5 w-5 text-success mt-0.5" />
               <div>
                 <p className="font-medium">배당금 수령</p>
-                <p className="text-sm text-muted-foreground">삼성전자, SK하이닉스 배당금 총 {formatCurrency(450000)} 수령</p>
-                <Badge variant="outline" className="mt-1">2024-01-15</Badge>
+                <p className="text-sm text-muted-foreground">
+                  삼성전자, SK하이닉스 배당금 총 {formatCurrency(450000)} 수령
+                </p>
+                <Badge variant="outline" className="mt-1">
+                  2024-01-15
+                </Badge>
               </div>
             </div>
 
@@ -122,7 +126,9 @@ export function MonthlyPage() {
               <div>
                 <p className="font-medium">정기예금 만기</p>
                 <p className="text-sm text-muted-foreground">신한은행 정기예금 만기 도래 예정 (만기일: 2024-02-28)</p>
-                <Badge variant="outline" className="mt-1">예정</Badge>
+                <Badge variant="outline" className="mt-1">
+                  예정
+                </Badge>
               </div>
             </div>
 
@@ -131,7 +137,9 @@ export function MonthlyPage() {
               <div>
                 <p className="font-medium">대출 상환</p>
                 <p className="text-sm text-muted-foreground">주택담보대출 원리금 상환 {formatCurrency(2100000)}</p>
-                <Badge variant="outline" className="mt-1">2024-01-05</Badge>
+                <Badge variant="outline" className="mt-1">
+                  2024-01-05
+                </Badge>
               </div>
             </div>
           </div>

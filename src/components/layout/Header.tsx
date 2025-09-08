@@ -5,15 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { NotificationDropdown } from '@/components/ui/NotificationDropdown'
 import { useAppStore } from '@/stores'
-import {
-  Menu,
-  Search,
-  Bell,
-  Moon,
-  Sun,
-  Settings,
-  LogOut,
-} from 'lucide-react'
+import { Menu, Search, Bell, Moon, Sun, Settings, LogOut } from 'lucide-react'
 
 export function Header() {
   const { sidebarOpen, setSidebarOpen, isDarkMode, toggleDarkMode } = useAppStore()
@@ -31,12 +23,7 @@ export function Header() {
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center px-4 lg:px-6">
         {/* 사이드바 토글 (모바일) */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="lg:hidden mr-2"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
+        <Button variant="ghost" size="icon" className="lg:hidden mr-2" onClick={() => setSidebarOpen(!sidebarOpen)}>
           <Menu className="h-5 w-5" />
         </Button>
 
@@ -57,24 +44,12 @@ export function Header() {
           <NotificationDropdown />
 
           {/* 다크모드 토글 */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleDarkMode}
-          >
-            {isDarkMode ? (
-              <Sun className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
+          <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
+            {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
 
           {/* 설정 */}
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => navigate('/settings')}
-          >
+          <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
             <Settings className="h-4 w-4" />
           </Button>
 

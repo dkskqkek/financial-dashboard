@@ -57,7 +57,12 @@
       "Bash(git checkout:*)",
       "mcp__render__get_selected_workspace",
       "mcp__render__create_static_site",
-      "WebFetch(domain:financial-dashboard-frontend-pwe9.onrender.com)"
+      "WebFetch(domain:financial-dashboard-frontend-pwe9.onrender.com)",
+      "Bash(npm run format:check:*)",
+      "Bash(npm run format:*)",
+      "Bash(npm run ci:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run type-check:*)"
     ],
     "deny": [],
     "ask": []

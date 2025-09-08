@@ -17,18 +17,22 @@ export function StockWeightCell({ stock, totalMarketValueKrw, convertStockValueT
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
     }
-    
+
     const abortController = new AbortController()
     abortControllerRef.current = abortController
 
     const calculateWeight = async () => {
-      if (abortController.signal.aborted) return
-      
+      if (abortController.signal.aborted) {
+        return
+      }
+
       setIsLoading(true)
       try {
         const stockValueKrw = await convertStockValueToKrw(stock)
-        if (abortController.signal.aborted) return
-        
+        if (abortController.signal.aborted) {
+          return
+        }
+
         const calculatedWeight = totalMarketValueKrw > 0 ? (stockValueKrw / totalMarketValueKrw) * 100 : 0
         setWeight(calculatedWeight)
       } catch (error) {
@@ -42,9 +46,9 @@ export function StockWeightCell({ stock, totalMarketValueKrw, convertStockValueT
         }
       }
     }
-    
+
     const timeoutId = setTimeout(calculateWeight, 100) // 100ms 디바운싱
-    
+
     return () => {
       clearTimeout(timeoutId)
       abortController.abort()

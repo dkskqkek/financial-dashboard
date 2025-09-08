@@ -1,0 +1,163 @@
+name: ✨ Feature Request
+description: 새로운 기능을 제안해주세요!
+title: "[FEATURE] "
+labels: ["✨ enhancement", "💡 feature request", "📋 triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **기능 제안해주셔서 감사합니다!** 🚀
+        
+        제안하신 기능이 다른 사용자들에게도 도움이 될 수 있도록 자세히 설명해주세요.
+
+  - type: textarea
+    id: feature-summary
+    attributes:
+      label: 🎯 기능 요약
+      description: 제안하고 싶은 기능을 한 문장으로 요약해주세요.
+      placeholder: 예시) 다크 모드 지원 기능을 추가해주세요.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: 🤔 해결하고 싶은 문제
+      description: 이 기능이 해결하려는 문제나 불편함은 무엇인가요?
+      placeholder: |
+        예시) 
+        - 밤늦게 대시보드를 사용할 때 화면이 너무 밝아서 눈이 아픕니다.
+        - 배터리 소모가 많습니다.
+        - 다른 앱들과 UI 일관성이 떨어집니다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 💡 제안하는 해결책
+      description: 어떤 방식으로 이 문제를 해결하고 싶으신가요?
+      placeholder: |
+        예시)
+        - 설정에서 라이트/다크 모드를 선택할 수 있는 토글 버튼
+        - 시스템 설정에 따라 자동으로 모드 변경
+        - 각 컴포넌트에 다크 모드 스타일 추가
+    validations:
+      required: true
+
+  - type: textarea
+    id: detailed-description
+    attributes:
+      label: 📋 상세 설명
+      description: 기능에 대해 더 자세히 설명해주세요.
+      placeholder: |
+        - 어떤 UI/UX를 원하시나요?
+        - 어떤 상호작용을 기대하시나요?
+        - 특별히 고려해야 할 사항이 있나요?
+
+  - type: textarea
+    id: mockup-wireframe
+    attributes:
+      label: 🎨 목업 / 와이어프레임
+      description: 기능의 UI/UX에 대한 아이디어가 있다면 이미지나 스케치를 첨부해주세요.
+      placeholder: 이미지를 드래그 앤 드롭하거나 붙여넣기 하세요.
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: 🏷️ 기능 타입
+      description: 어떤 종류의 기능인가요?
+      options:
+        - 🎨 UI/UX 개선
+        - 📊 새로운 데이터 시각화
+        - ⚙️ 설정/환경설정
+        - 🔄 데이터 처리/동기화
+        - 📱 모바일 최적화
+        - 🔒 보안/인증
+        - ⚡ 성능 개선
+        - 🔌 API/연동
+        - 📤 내보내기/가져오기
+        - 🔔 알림/피드백
+        - 기타
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: ⚡ 우선순위
+      description: 이 기능의 우선순위는 어느 정도라고 생각하시나요?
+      options:
+        - 🔴 High - 꼭 필요한 기능
+        - 🟡 Medium - 있으면 좋은 기능
+        - 🟢 Low - 여유가 있을 때 추가
+      default: 1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: 🛠️ 예상 복잡도
+      description: 개발 복잡도를 어느 정도로 예상하시나요?
+      options:
+        - 🟢 Simple - 간단한 UI 변경
+        - 🟡 Medium - 새로운 컴포넌트 개발
+        - 🔴 Complex - 아키텍처 변경 필요
+        - ❓ Unknown - 잘 모르겠음
+      default: 3
+
+  - type: textarea
+    id: alternative-solutions
+    attributes:
+      label: 🔄 대안
+      description: 다른 해결 방법을 생각해보셨나요?
+      placeholder: |
+        예시)
+        - 브라우저 확장 프로그램 사용
+        - 시스템 다크 모드 활용
+        - CSS 필터 사용
+
+  - type: textarea
+    id: similar-examples
+    attributes:
+      label: 🔗 유사한 예시
+      description: 다른 앱이나 웹사이트에서 비슷한 기능의 좋은 예시가 있나요?
+      placeholder: |
+        예시)
+        - GitHub의 다크 모드 전환
+        - Notion의 테마 설정
+        - 첨부된 스크린샷 참고
+
+  - type: checkboxes
+    id: implementation-help
+    attributes:
+      label: 🤝 구현 참여
+      description: 이 기능 구현에 어떻게 참여하실 수 있나요?
+      options:
+        - label: 코드 리뷰에 참여하고 싶습니다
+        - label: 테스트에 참여하고 싶습니다  
+        - label: 문서 작성을 도와드릴 수 있습니다
+        - label: 디자인 작업을 도와드릴 수 있습니다
+        - label: 직접 개발하고 싶습니다 (PR 제출)
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📋 추가 정보
+      description: 다른 관련 정보나 참고자료가 있다면 알려주세요.
+      placeholder: |
+        - 관련 링크
+        - 참고 문서
+        - 기타 의견
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: ✅ 확인사항
+      description: 다음 사항들을 확인해주세요.
+      options:
+        - label: 중복된 기능 요청이 없는지 확인했습니다.
+          required: true
+        - label: 현재 버전에 이미 해당 기능이 없는지 확인했습니다.
+          required: true

@@ -19,27 +19,27 @@ class ExchangeRateService {
   async fetchExchangeRate(): Promise<number> {
     try {
       // 캐시된 데이터가 유효한지 확인
-      if (this.cache && (Date.now() - this.cache.timestamp) < this.CACHE_DURATION) {
+      if (this.cache && Date.now() - this.cache.timestamp < this.CACHE_DURATION) {
         console.log('💰 환율 캐시 사용:', this.cache.rate.USD_KRW)
         return this.cache.rate.USD_KRW
       }
 
       // 1순위: 백엔드 API에서 환율 조회 (Yahoo Finance 기반)
       let rate = await this.fetchFromBackendApi()
-      
+
       // 백엔드 실패시 기존 API들 시도
       if (!rate) {
         rate = await this.tryExchangeRateApis()
       }
-      
+
       if (rate) {
         // 캐시 저장
         this.cache = {
           rate: {
             USD_KRW: rate,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
           },
-          timestamp: Date.now()
+          timestamp: Date.now(),
         }
         console.log('💰 환율 업데이트 성공:', rate)
         return rate
@@ -47,7 +47,6 @@ class ExchangeRateService {
         console.warn('⚠️ 모든 환율 API 실패, fallback 사용:', this.FALLBACK_RATE)
         return this.FALLBACK_RATE
       }
-
     } catch (error) {
       console.error('💥 환율 조회 오류:', error)
       return this.FALLBACK_RATE
@@ -58,7 +57,7 @@ class ExchangeRateService {
     const apis = [
       this.fetchFromExchangeRateApi.bind(this),
       this.fetchFromCurrencyApi.bind(this),
-      this.fetchFromFixer.bind(this)
+      this.fetchFromFixer.bind(this),
     ]
 
     for (const apiCall of apis) {
@@ -82,27 +81,26 @@ class ExchangeRateService {
       const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3007/api'
       const response = await fetch(`${baseUrl}/market/data`, {
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
         mode: 'cors',
-        credentials: 'omit'
+        credentials: 'omit',
       })
-      
+
       if (!response.ok) {
         throw new Error(`백엔드 API 응답 오류: ${response.status}`)
       }
-      
+
       const data = await response.json()
       const rate = data.usdKrw?.value
-      
+
       if (rate && rate > 0) {
         console.log('✅ 백엔드에서 환율 조회 성공:', rate)
         return rate
       }
-      
+
       throw new Error('백엔드 환율 데이터가 유효하지 않음')
-      
     } catch (error) {
       console.warn('❌ 백엔드 환율 조회 실패:', getErrorMessage(error))
       return null
@@ -112,8 +110,10 @@ class ExchangeRateService {
   // ExchangeRate-API (무료, API 키 불필요)
   private async fetchFromExchangeRateApi(): Promise<number | null> {
     const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD')
-    if (!response.ok) throw new Error('ExchangeRate API 응답 오류')
-    
+    if (!response.ok) {
+      throw new Error('ExchangeRate API 응답 오류')
+    }
+
     const data = await response.json()
     return data.rates?.KRW || null
   }
@@ -121,8 +121,10 @@ class ExchangeRateService {
   // Currency API (무료)
   private async fetchFromCurrencyApi(): Promise<number | null> {
     const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json')
-    if (!response.ok) throw new Error('Currency API 응답 오류')
-    
+    if (!response.ok) {
+      throw new Error('Currency API 응답 오류')
+    }
+
     const data = await response.json()
     return data.usd?.krw || null
   }
@@ -130,8 +132,10 @@ class ExchangeRateService {
   // Fixer (backup, 제한된 무료)
   private async fetchFromFixer(): Promise<number | null> {
     const response = await fetch('https://api.fixer.io/latest?base=USD&symbols=KRW')
-    if (!response.ok) throw new Error('Fixer API 응답 오류')
-    
+    if (!response.ok) {
+      throw new Error('Fixer API 응답 오류')
+    }
+
     const data = await response.json()
     return data.rates?.KRW || null
   }

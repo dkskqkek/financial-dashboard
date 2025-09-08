@@ -1,15 +1,5 @@
 import React from 'react'
-import {
-  ComposedChart,
-  Line,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts'
+import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -39,10 +29,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p className="font-medium mb-2">{label}</p>
         {payload.map((entry: any, index: number) => (
           <div key={index} className="flex items-center space-x-2 text-sm">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: entry.color }}
-            />
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
             <span className="text-muted-foreground">{entry.name}:</span>
             <span className="font-medium">
               {entry.name === '수익' || entry.name === '손실'
@@ -62,11 +49,10 @@ export function AssetChart({ data, selectedRange, onRangeChange }: AssetChartPro
     ...point,
     date: new Date(point.date).toLocaleDateString('ko-KR', {
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     }),
     profit: point.income && point.expense ? point.income - point.expense : 0,
-    loss: point.income && point.expense && point.income < point.expense 
-      ? point.expense - point.income : 0,
+    loss: point.income && point.expense && point.income < point.expense ? point.expense - point.income : 0,
   }))
 
   return (
@@ -96,9 +82,9 @@ export function AssetChart({ data, selectedRange, onRangeChange }: AssetChartPro
             </div>
           </div>
         </div>
-        
+
         <div className="flex flex-wrap gap-1 sm:gap-2 mt-4 overflow-x-auto">
-          {timeRanges.map((range) => (
+          {timeRanges.map(range => (
             <Button
               key={range.value}
               variant={selectedRange === range.value ? 'default' : 'outline'}
@@ -111,7 +97,7 @@ export function AssetChart({ data, selectedRange, onRangeChange }: AssetChartPro
           ))}
         </div>
       </CardHeader>
-      
+
       <CardContent className="px-3 pb-3">
         <div className="h-48 sm:h-64 lg:h-80 w-full mobile-chart">
           <ResponsiveContainer width="100%" height="100%">
@@ -129,25 +115,13 @@ export function AssetChart({ data, selectedRange, onRangeChange }: AssetChartPro
                 tickLine={false}
                 tick={{ fontSize: 12 }}
                 className="text-muted-foreground"
-                tickFormatter={(value) => formatCurrency(value).slice(0, -1)}
+                tickFormatter={value => formatCurrency(value).slice(0, -1)}
               />
               <Tooltip content={<CustomTooltip />} />
-              
-              <Bar
-                dataKey="profit"
-                fill="#10B981"
-                name="월별 수익"
-                radius={[2, 2, 0, 0]}
-                opacity={0.8}
-              />
-              <Bar
-                dataKey="loss"
-                fill="#EF4444"
-                name="월별 손실"
-                radius={[2, 2, 0, 0]}
-                opacity={0.8}
-              />
-              
+
+              <Bar dataKey="profit" fill="#10B981" name="월별 수익" radius={[2, 2, 0, 0]} opacity={0.8} />
+              <Bar dataKey="loss" fill="#EF4444" name="월별 손실" radius={[2, 2, 0, 0]} opacity={0.8} />
+
               <Line
                 type="monotone"
                 dataKey="totalAssets"
@@ -178,7 +152,7 @@ export function AssetChart({ data, selectedRange, onRangeChange }: AssetChartPro
             </ComposedChart>
           </ResponsiveContainer>
         </div>
-        
+
         {/* 성과 지표 */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
           <div className="text-center py-2">

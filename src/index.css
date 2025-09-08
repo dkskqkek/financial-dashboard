@@ -7,36 +7,36 @@
   .mobile-container {
     @apply px-2 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-6;
   }
-  
+
   .mobile-grid {
     @apply grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-6 xl:grid-cols-4;
   }
-  
+
   .mobile-card {
     @apply p-3 sm:p-4 min-h-fit overflow-hidden;
   }
-  
+
   .mobile-text {
     @apply text-xs leading-tight sm:text-sm lg:text-base break-words;
   }
-  
+
   .mobile-chart {
     @apply h-48 sm:h-56 lg:h-72;
   }
-  
+
   /* 모바일 테이블 최적화 */
   .mobile-table {
     @apply text-xs sm:text-sm overflow-x-auto;
     min-width: 100%;
   }
-  
+
   .mobile-table th,
   .mobile-table td {
     @apply px-1 py-2 sm:px-2 sm:py-3 lg:px-4 text-left;
     white-space: nowrap;
     min-width: fit-content;
   }
-  
+
   /* 작은 화면용 테이블 */
   .mobile-table-compact th,
   .mobile-table-compact td {
@@ -45,20 +45,20 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   /* 모바일 버튼 최적화 */
   .mobile-button {
     @apply min-h-[40px] px-3 py-2 text-xs sm:min-h-[44px] sm:px-4 sm:text-sm lg:text-base;
     touch-action: manipulation;
   }
-  
+
   /* 모바일 입력 필드 최적화 */
   .mobile-input {
     @apply min-h-[40px] px-2 py-1.5 text-sm sm:min-h-[44px] sm:px-3 sm:py-2 sm:text-base;
     -webkit-appearance: none;
     border-radius: 6px;
   }
-  
+
   /* 모바일 제목 최적화 */
   .mobile-title {
     @apply text-base sm:text-lg lg:text-xl xl:text-2xl font-bold;
@@ -67,56 +67,59 @@
     word-break: keep-all;
     overflow-wrap: break-word;
     max-width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  
+
   .mobile-subtitle {
     @apply text-xs sm:text-sm lg:text-base text-muted-foreground;
     line-height: 1.4;
     word-spacing: -1px;
     letter-spacing: -0.1px;
     max-width: 100%;
+    -webkit-font-smoothing: antialiased;
   }
-  
+
   /* 모바일 카드 헤더 최적화 */
   .mobile-card-header {
     @apply pb-2 sm:pb-3;
   }
-  
+
   .mobile-card-title {
     @apply text-sm sm:text-base lg:text-lg font-semibold leading-tight;
   }
-  
+
   /* 모바일 통계 카드 */
   .mobile-stat-grid {
     @apply grid grid-cols-2 gap-2 sm:gap-4 lg:grid-cols-4;
   }
-  
+
   .mobile-stat-card {
     @apply text-center p-2 sm:p-3 lg:p-4;
   }
-  
+
   .mobile-stat-value {
     @apply text-lg sm:text-xl lg:text-2xl font-bold leading-tight;
   }
-  
+
   .mobile-stat-label {
     @apply text-xs sm:text-sm text-muted-foreground mt-1;
   }
-  
+
   /* 모바일 폼 최적화 */
   .mobile-form {
     @apply space-y-3 sm:space-y-4;
   }
-  
+
   .mobile-form-grid {
     @apply grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4;
   }
-  
+
   /* 모바일 다이얼로그 최적화 */
   .mobile-dialog {
     @apply max-w-[95vw] sm:max-w-[90vw] lg:max-w-[80vw] max-h-[90vh];
   }
-  
+
   /* 반응형 텍스트 줄바꿈 */
   .mobile-text-wrap {
     @apply break-words;
@@ -127,41 +130,73 @@
     line-height: 1.5;
     word-spacing: -0.5px;
     letter-spacing: -0.1px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
-  
+
   /* 숫자 표시 최적화 */
   .mobile-number {
     @apply font-mono text-xs sm:text-sm lg:text-base tabular-nums;
   }
-  
+
   /* 작은 화면용 숨김 */
   .mobile-hide {
     @apply hidden sm:block;
   }
-  
+
   .mobile-only {
     @apply block sm:hidden;
   }
-  
+
   /* PWA 스타일 */
   .pwa-install-button {
     @apply bg-primary text-primary-foreground px-4 py-2 rounded-lg shadow-lg hover:bg-primary/90 transition-colors;
   }
-  
+
+  /* 통화 표시 최적화 */
+  .currency {
+    @apply font-mono tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+
+  /* 차트 애니메이션 최적화 */
+  .chart-container {
+    will-change: transform;
+  }
+
+  /* 터치 친화적 요소 */
+  .touch-friendly {
+    @apply min-h-[44px] min-w-[44px];
+    touch-action: manipulation;
+  }
+
+  /* 로딩 상태 스켈레톤 */
+  .skeleton {
+    @apply bg-muted animate-pulse rounded;
+  }
+
+  .skeleton-text {
+    @apply h-4 bg-muted animate-pulse rounded;
+  }
+
+  .skeleton-avatar {
+    @apply h-10 w-10 bg-muted animate-pulse rounded-full;
+  }
+
   .pwa-notification {
     @apply fixed bottom-4 left-4 right-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 z-50;
   }
-  
+
   /* 오프라인 상태 표시 */
   .offline-indicator {
     @apply fixed top-0 left-0 right-0 bg-red-500 text-white text-center py-1 text-sm z-50;
   }
-  
+
   /* 모바일 터치 최적화 */
   .touch-target {
     @apply min-h-[44px] min-w-[44px];
   }
-  
+
   /* 모바일 스크롤 최적화 */
   .mobile-scroll {
     -webkit-overflow-scrolling: touch;
@@ -212,7 +247,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.0%;
+    --ring: 224.3 76.3% 94%;
   }
 }
 
@@ -222,7 +257,9 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 }
 

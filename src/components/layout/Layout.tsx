@@ -36,26 +36,23 @@ export function Layout() {
   return (
     <div className="h-screen flex overflow-hidden bg-background">
       <Sidebar />
-      
+
       {/* 모바일 오버레이 */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
-      
+
       {/* 메인 콘텐츠 영역 */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
-        
+
         <main className="flex-1 overflow-y-auto bg-muted/20 mobile-scroll">
           <div className="h-full">
             <Outlet />
           </div>
         </main>
       </div>
-      
+
       {/* PWA 설치 및 네트워크 상태 */}
       <PWAInstaller />
     </div>
