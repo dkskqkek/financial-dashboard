@@ -257,9 +257,20 @@ export class IndestructibleDataVault {
       // 모든 저장소에 복구
       await this.saveToAllStorages(bestBackup.data, 'recovery')
       
-      // Zustand store도 복구
-      const setState = useAppStore.setState
-      setState(bestBackup.data)
+      // Zustand store 복구 (올바른 방법)
+      const store = useAppStore as any
+      store.setState(bestBackup.data, true) // true = replace entire state
+      
+      // persist store도 강제 동기화
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('financial-dashboard-store', JSON.stringify({
+          state: bestBackup.data,
+          version: 0
+        }))
+        
+        // 페이지 새로고침으로 완전 복구
+        window.location.reload()
+      }
       
       console.log('✅ 자동 복구 완료')
       return true
@@ -318,8 +329,22 @@ export class IndestructibleDataVault {
 export const setupIndestructibleBackup = () => {
   console.log('🛡️ 불멸 백업 시스템 활성화')
   
-  // 앱 시작시 즉시 검증
-  IndestructibleDataVault.emergencyCheck()
+  // 앱 시작시 즉시 검증 및 데이터 손실 감지
+  setTimeout(() => {
+    const state = useAppStore.getState()
+    const isEmpty = !state.cashAccounts?.length && 
+                   !state.stocks?.length && 
+                   !state.transactions?.length &&
+                   !state.assetSummary?.totalAssets
+    
+    if (isEmpty) {
+      console.warn('🚨 데이터 손실 감지! 자동 복구 시도...')
+      IndestructibleDataVault.autoRecover()
+    } else {
+      console.log('✅ 기존 데이터 확인됨')
+      IndestructibleDataVault.emergencyCheck()
+    }
+  }, 1000) // 1초 후 확인 (store 초기화 대기)
   
   // 데이터 변경 감지
   let saveTimeout: NodeJS.Timeout
@@ -328,7 +353,26 @@ export const setupIndestructibleBackup = () => {
     clearTimeout(saveTimeout)
     saveTimeout = setTimeout(async () => {
       const state = useAppStore.getState()
-      const partialState = useAppStore.persist.getOptions().partialize?.(state) || state
+      // persist partialize와 같은 데이터만 백업 (수동으로 필터링)
+      const partialState = {
+        user: state.user,
+        stocks: state.stocks,
+        stockTransactions: state.stockTransactions,
+        dividends: state.dividends,
+        cashAccounts: state.cashAccounts,
+        transactions: state.transactions,
+        savings: state.savings,
+        realEstate: state.realEstate,
+        loans: state.loans,
+        loanPayments: state.loanPayments,
+        isDarkMode: state.isDarkMode,
+        selectedTimeRange: state.selectedTimeRange,
+        sidebarOpen: state.sidebarOpen,
+        financialData: state.financialData,
+        exchangeRate: state.exchangeRate,
+        assetSummary: state.assetSummary,
+        assetAllocation: state.assetAllocation,
+      }
       await IndestructibleDataVault.saveToAllStorages(partialState, 'auto')
     }, 2000) // 2초 디바운스
   }
@@ -341,7 +385,26 @@ export const setupIndestructibleBackup = () => {
   // 페이지 종료 전 마지막 백업
   window.addEventListener('beforeunload', async () => {
     const state = useAppStore.getState()
-    const partialState = useAppStore.persist.getOptions().partialize?.(state) || state
+    // persist와 동일한 데이터만 백업
+    const partialState = {
+      user: state.user,
+      stocks: state.stocks,
+      stockTransactions: state.stockTransactions,
+      dividends: state.dividends,
+      cashAccounts: state.cashAccounts,
+      transactions: state.transactions,
+      savings: state.savings,
+      realEstate: state.realEstate,
+      loans: state.loans,
+      loanPayments: state.loanPayments,
+      isDarkMode: state.isDarkMode,
+      selectedTimeRange: state.selectedTimeRange,
+      sidebarOpen: state.sidebarOpen,
+      financialData: state.financialData,
+      exchangeRate: state.exchangeRate,
+      assetSummary: state.assetSummary,
+      assetAllocation: state.assetAllocation,
+    }
     await IndestructibleDataVault.saveToAllStorages(partialState, 'beforeunload')
   })
   
