@@ -53,7 +53,11 @@
       "mcp__render__get_deploy",
       "WebFetch(domain:financial-dashboard-2-black.vercel.app)",
       "mcp__render__update_environment_variables",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git checkout:*)",
+      "mcp__render__get_selected_workspace",
+      "mcp__render__create_static_site",
+      "WebFetch(domain:financial-dashboard-frontend-pwe9.onrender.com)"
     ],
     "deny": [],
     "ask": []
