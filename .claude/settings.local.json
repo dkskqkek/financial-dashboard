@@ -64,7 +64,8 @@
       "Bash(npm run lint:*)",
       "Bash(npm run type-check:*)",
       "Bash(tree:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(wc:*)"
     ],
     "deny": [],
     "ask": []
