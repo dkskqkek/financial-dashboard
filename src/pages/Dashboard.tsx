@@ -186,10 +186,10 @@ export function Dashboard() {
       }
     }
     
-    // 순자산 기준으로 비율 계산 (부채 제외)
-    const netAssets = totalAssets - totalDebt
+    // 총 자산 기준으로 비율 계산 (부채는 별도 표시)
+    const totalPositiveAssets = totalCash + totalSavings + stocksTotal + bondsTotal + goldTotal + cryptoTotal + totalRealEstate
     
-    if (netAssets <= 0) {
+    if (totalPositiveAssets <= 0) {
       return {
         cash: 0,
         stocks: 0,
@@ -197,22 +197,20 @@ export function Dashboard() {
         gold: 0,
         crypto: 0,
         realEstate: 0,
-        debt: totalDebt > 0 ? 100 : 0, // 부채만 있는 경우
         domesticStocks: 0,
         foreignStocks: 0
       }
     }
     
     return {
-      cash: (totalCash + totalSavings) / netAssets * 100,
-      stocks: stocksTotal / netAssets * 100,
-      bonds: bondsTotal / netAssets * 100,
-      gold: goldTotal / netAssets * 100,
-      crypto: cryptoTotal / netAssets * 100,
-      realEstate: totalRealEstate / netAssets * 100,
-      debt: totalDebt / netAssets * 100, // 부채 비율을 보여줌
-      domesticStocks: stocksTotal / netAssets * 100 * 0.6, // 예시: 60% 국내
-      foreignStocks: stocksTotal / netAssets * 100 * 0.4   // 예시: 40% 해외
+      cash: (totalCash + totalSavings) / totalPositiveAssets * 100,
+      stocks: stocksTotal / totalPositiveAssets * 100,
+      bonds: bondsTotal / totalPositiveAssets * 100,
+      gold: goldTotal / totalPositiveAssets * 100,
+      crypto: cryptoTotal / totalPositiveAssets * 100,
+      realEstate: totalRealEstate / totalPositiveAssets * 100,
+      domesticStocks: stocksTotal / totalPositiveAssets * 100 * 0.6, // 예시: 60% 국내
+      foreignStocks: stocksTotal / totalPositiveAssets * 100 * 0.4   // 예시: 40% 해외
     }
   }, [cashAccounts, stocks, realEstate, savings, loans, convertToKrwTotal, convertStockValueToKrw])
 

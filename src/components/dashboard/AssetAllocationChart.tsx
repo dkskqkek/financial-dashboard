@@ -11,13 +11,24 @@ interface AssetAllocationChartProps {
 }
 
 const COLORS = {
-  cash: '#10B981',
-  stocks: '#1E3A8A',
-  bonds: '#F59E0B',
-  gold: '#FFD700',
-  crypto: '#F97316',
-  realEstate: '#8B5CF6',
-  debt: '#EF4444',
+  cash: '#10B981',      // 녹색 - 현금
+  stocks: '#3B82F6',    // 파랑 - 주식  
+  bonds: '#F59E0B',     // 주황 - 채권
+  gold: '#FBBF24',      // 골드 - 금
+  crypto: '#F97316',    // 오렌지 - 가상화폐
+  realEstate: '#8B5CF6', // 보라 - 부동산
+  debt: '#EF4444',      // 빨강 - 부채
+}
+
+// 그라데이션 색상 팔레트 (미래 확장용)
+const GRADIENT_COLORS = {
+  cash: ['#10B981', '#059669'],
+  stocks: ['#3B82F6', '#1D4ED8'],
+  bonds: ['#F59E0B', '#D97706'],
+  gold: ['#FBBF24', '#F59E0B'],
+  crypto: ['#F97316', '#EA580C'],
+  realEstate: ['#8B5CF6', '#7C3AED'],
+  debt: ['#EF4444', '#DC2626'],
 }
 
 const LABELS = {
@@ -30,19 +41,28 @@ const LABELS = {
   debt: '부채',
 }
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload
+    const colorKey = data.key as keyof typeof COLORS
     return (
-      <div className="bg-card p-4 border rounded-lg shadow-lg">
-        <p className="font-medium">{data.name}</p>
-        <div className="flex items-center justify-between mt-2 space-x-4">
-          <span className="text-sm text-muted-foreground">비중:</span>
-          <span className="font-medium">{data.percentage.toFixed(1)}%</span>
+      <div className="bg-card p-4 border rounded-lg shadow-xl border-border/50 backdrop-blur-sm">
+        <div className="flex items-center space-x-2 mb-3">
+          <div 
+            className="w-3 h-3 rounded-full" 
+            style={{ backgroundColor: COLORS[colorKey] }}
+          />
+          <p className="font-semibold text-foreground">{data.name}</p>
         </div>
-        <div className="flex items-center justify-between space-x-4">
-          <span className="text-sm text-muted-foreground">금액:</span>
-          <span className="font-medium">{formatCurrency(data.value)}</span>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between space-x-6">
+            <span className="text-sm text-muted-foreground">비중</span>
+            <span className="font-bold text-lg">{data.percentage.toFixed(1)}%</span>
+          </div>
+          <div className="flex items-center justify-between space-x-6">
+            <span className="text-sm text-muted-foreground">금액</span>
+            <span className="font-medium text-base">{formatCurrency(data.value)}</span>
+          </div>
         </div>
       </div>
     )
@@ -85,7 +105,12 @@ const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percentage, n
 }
 
 export function AssetAllocationChart({ allocation, summary }: AssetAllocationChartProps) {
+  // 부채 제외한 순자산 계산
+  const netWorth = summary.netWorth || (summary.totalAssets - (allocation.debt || 0))
+  const totalDebt = summary.totalAssets * (allocation.debt || 0) / 100
+
   const chartData = Object.entries(allocation)
+    .filter(([key]) => key !== 'debt') // 부채 제외
     .map(([key, percentage]) => ({
       name: LABELS[key as keyof AssetAllocation],
       key,
@@ -121,6 +146,30 @@ export function AssetAllocationChart({ allocation, summary }: AssetAllocationCha
       </CardHeader>
       
       <CardContent className="px-3 pb-3">
+        {/* 자산/부채 요약 */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 p-2 sm:p-3 bg-muted/20 rounded-lg">
+          <div className="text-center">
+            <div className="text-xs text-muted-foreground">총 자산</div>
+            <div className="text-sm sm:text-base font-bold text-green-600 mobile-text">
+              {formatCurrency(summary.totalAssets)}
+            </div>
+          </div>
+          {totalDebt > 0 && (
+            <div className="text-center">
+              <div className="text-xs text-muted-foreground">총 부채</div>
+              <div className="text-sm sm:text-base font-bold text-red-600 mobile-text">
+                {formatCurrency(totalDebt)}
+              </div>
+            </div>
+          )}
+          <div className="text-center">
+            <div className="text-xs text-muted-foreground">순 자산</div>
+            <div className="text-sm sm:text-base font-bold text-blue-600 mobile-text">
+              {formatCurrency(netWorth)}
+            </div>
+          </div>
+        </div>
+
         <div className="space-y-6">
           {/* 도넛 차트 */}
           <div className="h-56 sm:h-64 relative mobile-chart">
@@ -136,12 +185,18 @@ export function AssetAllocationChart({ allocation, summary }: AssetAllocationCha
                   innerRadius={45}
                   fill="#8884d8"
                   dataKey="value"
-                  paddingAngle={2}
+                  paddingAngle={3}
+                  animationBegin={0}
+                  animationDuration={1200}
+                  animationEasing="ease-out"
                 >
                   {chartData.map((entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[entry.key as keyof typeof COLORS]}
+                      stroke="#ffffff"
+                      strokeWidth={2}
+                      className="hover:opacity-80 transition-opacity duration-200"
                     />
                   ))}
                 </Pie>
@@ -149,12 +204,17 @@ export function AssetAllocationChart({ allocation, summary }: AssetAllocationCha
               </PieChart>
             </ResponsiveContainer>
             
-            {/* 중앙 총자산 표시 */}
+            {/* 중앙 순자산 표시 */}
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-xs text-muted-foreground mobile-text">총자산</div>
+              <div className="text-xs text-muted-foreground mobile-text">순자산</div>
               <div className="text-sm sm:text-lg font-bold currency mobile-text">
-                {formatCurrency(summary.totalAssets)}
+                {formatCurrency(netWorth)}
               </div>
+              {totalDebt > 0 && (
+                <div className="text-xs text-red-600 mobile-text mt-1">
+                  부채: {formatCurrency(totalDebt)}
+                </div>
+              )}
             </div>
           </div>
           
