@@ -18,6 +18,8 @@ const COLORS = {
   crypto: '#F97316',    // 오렌지 - 가상화폐
   realEstate: '#8B5CF6', // 보라 - 부동산
   debt: '#EF4444',      // 빨강 - 부채
+  domesticStocks: '#1E40AF',  // 진파랑 - 국내주식
+  foreignStocks: '#06B6D4',   // 청록 - 해외주식
 }
 
 // 그라데이션 색상 팔레트 (미래 확장용)
@@ -29,6 +31,8 @@ const GRADIENT_COLORS = {
   crypto: ['#F97316', '#EA580C'],
   realEstate: ['#8B5CF6', '#7C3AED'],
   debt: ['#EF4444', '#DC2626'],
+  domesticStocks: ['#1E40AF', '#1E3A8A'],
+  foreignStocks: ['#06B6D4', '#0891B2'],
 }
 
 const LABELS = {
@@ -39,6 +43,8 @@ const LABELS = {
   crypto: '가상화폐',
   realEstate: '부동산',
   debt: '부채',
+  domesticStocks: '국내주식',
+  foreignStocks: '해외주식',
 }
 
 const CustomTooltip = ({ active, payload, label }: any) => {

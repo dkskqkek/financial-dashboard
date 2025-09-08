@@ -423,6 +423,7 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'financial-dashboard-store',
+      version: 1, // 버전 관리로 데이터 일관성 확보
       partialize: (state) => ({
         user: state.user,
         stocks: state.stocks,
@@ -439,6 +440,11 @@ export const useAppStore = create<AppStore>()(
         sidebarOpen: state.sidebarOpen,
         financialData: state.financialData,
         exchangeRate: state.exchangeRate,
+        // 계산된 값들도 캐시하여 초기 로드 성능 향상
+        assetSummary: state.assetSummary,
+        assetAllocation: state.assetAllocation,
+        // 마지막 업데이트 시각으로 동기화 상태 확인
+        lastUpdated: Date.now(),
       }),
     }
   )
