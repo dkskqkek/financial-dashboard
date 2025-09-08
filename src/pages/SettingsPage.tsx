@@ -64,9 +64,9 @@ export function SettingsPage() {
   return (
     <div className="mobile-container space-y-3 sm:space-y-4 lg:space-y-6">
       <div className="space-y-1">
-        <h1 className="mobile-title">설정</h1>
+        <h1 className="mobile-title">🚨 설정 (DEPLOYMENT TEST v3.0)</h1>
         <p className="mobile-subtitle mobile-text-wrap">
-          계정 설정과 앱 환경설정을 관리하세요
+          🔴 VERCEL 배포 확인용 - 이 빨간 텍스트가 보이면 성공! 🔴
         </p>
       </div>
 
