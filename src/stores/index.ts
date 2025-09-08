@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { exchangeRateService } from '@/services/exchangeRateService'
+import { apiService } from '@/services/api'
 import type {
   User,
   AssetSummary,
@@ -43,6 +44,7 @@ interface AppStore {
   addTransaction: (transaction: Transaction) => void
   updateTransaction: (id: string, updates: Partial<Transaction>) => void
   deleteTransaction: (id: string) => void
+  loadTransactions: () => Promise<void>
 
   // Stocks
   stocks: Stock[]
@@ -147,6 +149,16 @@ export const useAppStore = create<AppStore>()(
       // Transactions
       transactions: [],
       setTransactions: transactions => set({ transactions }),
+      loadTransactions: async () => {
+        set({ isLoading: true })
+        try {
+          const transactionData = await apiService.getTransactions()
+          set({ transactions: transactionData, isLoading: false })
+        } catch (error) {
+          console.error('Failed to load transactions:', error)
+          set({ isLoading: false })
+        }
+      },
       addTransaction: transaction =>
         set(state => {
           // 계좌 잔액 자동 업데이트
