@@ -33,7 +33,7 @@ export interface AssetAllocation {
   gold: number
   crypto: number
   realEstate: number
-  debt?: number  // 선택적 속성으로 변경 (차트에서 별도 표시)
+  debt?: number // 선택적 속성으로 변경 (차트에서 별도 표시)
   // Optional properties for detailed stock allocation
   domesticStocks?: number
   foreignStocks?: number
@@ -210,6 +210,24 @@ export interface RebalanceRecommendation {
   targetWeight: number
   requiredAmount: number
   action: 'buy' | 'sell'
+}
+
+// Added FinancialData and related types
+export interface FinancialDataSummary {
+  totalIncome?: number
+  totalExpense?: number
+}
+
+export interface FinancialDataMonthly {
+  date: string
+  income: number
+  expense: number
+  netIncome: number
+}
+
+export interface FinancialData {
+  summary?: FinancialDataSummary
+  monthly?: FinancialDataMonthly[]
 }
 
 export type TimeRange = '1M' | '3M' | '6M' | '1Y' | '3Y' | '5Y' | 'ALL'
