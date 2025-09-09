@@ -1,6 +1,6 @@
-# FinanceDash - 개인 금융 대시보드
+# FinanceDash - 개인 금융 대시보드 ✨
 
-**완전한 개인 자산 관리 솔루션**
+**완전한 개인 자산 관리 솔루션** (자동화 시스템 테스트)
 
 React + TypeScript + Tailwind CSS + shadcn/ui + Recharts를 사용하여 구축된 현대적인 금융 대시보드 웹 애플리케이션입니다.
 

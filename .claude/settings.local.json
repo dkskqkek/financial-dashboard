@@ -68,7 +68,8 @@
       "Bash(wc:*)",
       "WebFetch(domain:personal-dashboard-app-psi.vercel.app)",
       "Bash(timeout:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(scoop install:*)"
     ],
     "deny": [],
     "ask": []
