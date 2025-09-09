@@ -66,7 +66,8 @@
       "Bash(tree:*)",
       "Bash(mkdir:*)",
       "Bash(wc:*)",
-      "WebFetch(domain:personal-dashboard-app-psi.vercel.app)"
+      "WebFetch(domain:personal-dashboard-app-psi.vercel.app)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []
