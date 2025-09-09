@@ -35,7 +35,14 @@
     "recharts": "^2.8.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss-animate": "^1.0.7",
-    "zustand": "^4.4.6"
+    "zustand": "^4.4.6",
+    "yahoo-finance2": "^2.11.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "multer": "^1.4.5-lts.1",
+    "xlsx": "^0.18.5",
+    "papaparse": "^5.4.1",
+    "cheerio": "^1.0.0-rc.12"
   },
   "devDependencies": {
     "@types/node": "^20.8.10",
