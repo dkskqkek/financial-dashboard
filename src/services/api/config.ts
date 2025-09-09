@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  baseUrl: (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3007') + '/api',
+  baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3007',
   wsUrl: import.meta.env.VITE_WS_URL || 'ws://localhost:3001/ws',
   retryCount: 3,
   retryDelay: 1000,
