@@ -1,38 +1,41 @@
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { BaseModalForm } from '@/components/common/BaseModalForm'
 import { useAppStore } from '@/stores'
 import { generateId } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 import type { Transaction } from '@/types'
 
+interface TransactionFormData {
+  type: 'income' | 'expense' | 'transfer'
+  account: string
+  description: string
+  amount: string
+  category: string
+  memo: string
+  date: string
+  fee: string
+  reference: string
+}
+
 export function AddTransactionForm() {
   const { addTransaction, cashAccounts } = useAppStore()
-  const [open, setOpen] = useState(false)
   const [customAccount, setCustomAccount] = useState('')
-  const [formData, setFormData] = useState({
-    type: 'expense' as 'income' | 'expense' | 'transfer',
+  
+  const initialData: TransactionFormData = {
+    type: 'expense',
     account: '',
     description: '',
     amount: '',
     category: '',
     memo: '',
-    date: new Date().toISOString().split('T')[0], // 날짜 선택 가능
-    fee: '', // 수수료 추가
-    reference: '', // 참조번호 추가
-  })
+    date: new Date().toISOString().split('T')[0],
+    fee: '',
+    reference: '',
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
+  const handleSubmit = (formData: TransactionFormData) => {
     const accountName = formData.account === '기타' ? customAccount : formData.account
 
     const now = new Date().toISOString()
@@ -43,7 +46,7 @@ export function AddTransactionForm() {
       account: accountName,
       description: formData.description,
       amount: formData.type === 'expense' ? -Math.abs(Number(formData.amount)) : Number(formData.amount),
-      balance: 0, // 계좌 잔액은 별도로 계산
+      balance: 0,
       category: formData.category,
       memo: formData.memo || undefined,
       fee: formData.fee ? Number(formData.fee) : undefined,
@@ -53,35 +56,28 @@ export function AddTransactionForm() {
     }
 
     addTransaction(newTransaction)
-    setOpen(false)
-    setFormData({
-      type: 'expense',
-      account: '',
-      description: '',
-      amount: '',
-      category: '',
-      memo: '',
-      date: new Date().toISOString().split('T')[0],
-      fee: '',
-      reference: '',
-    })
+  }
+
+  const handleReset = () => {
     setCustomAccount('')
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <BaseModalForm
+      title="새 거래 추가"
+      description="수입, 지출 또는 이체 거래를 기록하세요."
+      triggerButton={
         <Button data-testid="add-transaction-trigger">
           <Plus className="h-4 w-4 mr-2" />
           거래 추가
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>새 거래 추가</DialogTitle>
-          <DialogDescription>수입, 지출 또는 이체 거래를 기록하세요.</DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      }
+      initialData={initialData}
+      onSubmit={handleSubmit}
+      onReset={handleReset}
+    >
+      {({ formData, updateField }) => (
+        <>
           <div>
             <label htmlFor="transactionType" className="text-sm font-medium">
               거래 유형
@@ -90,7 +86,7 @@ export function AddTransactionForm() {
               id="transactionType"
               name="transactionType"
               value={formData.type}
-              onChange={e => setFormData({ ...formData, type: e.target.value as any })}
+              onChange={e => updateField('type', e.target.value as TransactionFormData['type'])}
               className="w-full mt-1 px-3 py-2 border rounded-md"
               required
             >
@@ -108,7 +104,7 @@ export function AddTransactionForm() {
               id="transactionAccount"
               name="transactionAccount"
               value={formData.account}
-              onChange={e => setFormData({ ...formData, account: e.target.value })}
+              onChange={e => updateField('account', e.target.value)}
               className="w-full mt-1 px-3 py-2 border rounded-md"
               required
             >
@@ -140,7 +136,7 @@ export function AddTransactionForm() {
               name="transactionDate"
               type="date"
               value={formData.date}
-              onChange={e => setFormData({ ...formData, date: e.target.value })}
+              onChange={e => updateField('date', e.target.value)}
               required
             />
           </div>
@@ -153,7 +149,7 @@ export function AddTransactionForm() {
               id="description"
               name="description"
               value={formData.description}
-              onChange={e => setFormData({ ...formData, description: e.target.value })}
+              onChange={e => updateField('description', e.target.value)}
               placeholder="거래 내용을 입력하세요"
               required
             />
@@ -169,7 +165,7 @@ export function AddTransactionForm() {
                 name="amount"
                 type="number"
                 value={formData.amount}
-                onChange={e => setFormData({ ...formData, amount: e.target.value })}
+                onChange={e => updateField('amount', e.target.value)}
                 placeholder="금액을 입력하세요"
                 required
               />
@@ -183,7 +179,7 @@ export function AddTransactionForm() {
                 name="fee"
                 type="number"
                 value={formData.fee}
-                onChange={e => setFormData({ ...formData, fee: e.target.value })}
+                onChange={e => updateField('fee', e.target.value)}
                 placeholder="수수료"
               />
             </div>
@@ -197,7 +193,7 @@ export function AddTransactionForm() {
               id="category"
               name="category"
               value={formData.category}
-              onChange={e => setFormData({ ...formData, category: e.target.value })}
+              onChange={e => updateField('category', e.target.value)}
               className="w-full mt-1 px-3 py-2 border rounded-md"
               required
             >
@@ -220,7 +216,7 @@ export function AddTransactionForm() {
               id="reference"
               name="reference"
               value={formData.reference}
-              onChange={e => setFormData({ ...formData, reference: e.target.value })}
+              onChange={e => updateField('reference', e.target.value)}
               placeholder="거래 참조번호 (영수증번호 등)"
             />
           </div>
@@ -233,19 +229,12 @@ export function AddTransactionForm() {
               id="transactionMemo"
               name="transactionMemo"
               value={formData.memo}
-              onChange={e => setFormData({ ...formData, memo: e.target.value })}
+              onChange={e => updateField('memo', e.target.value)}
               placeholder="메모를 입력하세요"
             />
           </div>
-
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              취소
-            </Button>
-            <Button type="submit">추가</Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </>
+      )}
+    </BaseModalForm>
   )
 }

@@ -1,23 +1,27 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { BaseModalForm } from '@/components/common/BaseModalForm'
 import { useAppStore } from '@/stores'
 import { generateId } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 import type { Loan } from '@/types'
 
+interface LoanFormData {
+  lender: string
+  type: string
+  originalAmount: string
+  currentBalance: string
+  interestRate: string
+  monthlyPayment: string
+  maturityDate: string
+  purpose: string
+}
+
 export function AddLoanForm() {
   const { addLoan } = useAppStore()
-  const [open, setOpen] = useState(false)
-  const [formData, setFormData] = useState({
+  
+  const initialData: LoanFormData = {
     lender: '',
     type: '',
     originalAmount: '',
@@ -26,11 +30,9 @@ export function AddLoanForm() {
     monthlyPayment: '',
     maturityDate: '',
     purpose: '',
-  })
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
+  const handleSubmit = (formData: LoanFormData) => {
     const newLoan: Loan = {
       id: generateId(),
       lender: formData.lender,
@@ -44,33 +46,23 @@ export function AddLoanForm() {
     }
 
     addLoan(newLoan)
-    setOpen(false)
-    setFormData({
-      lender: '',
-      type: '',
-      originalAmount: '',
-      currentBalance: '',
-      interestRate: '',
-      monthlyPayment: '',
-      maturityDate: '',
-      purpose: '',
-    })
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <BaseModalForm
+      title="대출 추가"
+      description="주택대출, 전세대출, 신용대출 등의 대출 정보를 추가하세요."
+      triggerButton={
         <Button variant="outline">
           <Plus className="h-4 w-4 mr-2" />
           대출 추가
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>대출 추가</DialogTitle>
-          <DialogDescription>주택대출, 전세대출, 신용대출 등의 대출 정보를 추가하세요.</DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      }
+      initialData={initialData}
+      onSubmit={handleSubmit}
+    >
+      {({ formData, updateField }) => (
+        <>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="lender" className="text-sm font-medium">
@@ -80,7 +72,7 @@ export function AddLoanForm() {
                 id="lender"
                 name="lender"
                 value={formData.lender}
-                onChange={e => setFormData({ ...formData, lender: e.target.value })}
+                onChange={e => updateField('lender', e.target.value)}
                 placeholder="예: 국민은행"
                 required
               />
@@ -94,7 +86,7 @@ export function AddLoanForm() {
                 id="type"
                 name="type"
                 value={formData.type}
-                onChange={e => setFormData({ ...formData, type: e.target.value })}
+                onChange={e => updateField('type', e.target.value)}
                 className="w-full mt-1 px-3 py-2 border rounded-md"
                 required
               >
@@ -118,7 +110,7 @@ export function AddLoanForm() {
                 name="originalAmount"
                 type="number"
                 value={formData.originalAmount}
-                onChange={e => setFormData({ ...formData, originalAmount: e.target.value })}
+                onChange={e => updateField('originalAmount', e.target.value)}
                 placeholder="원"
                 min="0"
                 required
@@ -134,7 +126,7 @@ export function AddLoanForm() {
                 name="currentBalance"
                 type="number"
                 value={formData.currentBalance}
-                onChange={e => setFormData({ ...formData, currentBalance: e.target.value })}
+                onChange={e => updateField('currentBalance', e.target.value)}
                 placeholder="원"
                 min="0"
                 required
@@ -152,7 +144,7 @@ export function AddLoanForm() {
                 name="interestRate"
                 type="number"
                 value={formData.interestRate}
-                onChange={e => setFormData({ ...formData, interestRate: e.target.value })}
+                onChange={e => updateField('interestRate', e.target.value)}
                 placeholder="3.2"
                 min="0"
                 max="100"
@@ -170,7 +162,7 @@ export function AddLoanForm() {
                 name="monthlyPayment"
                 type="number"
                 value={formData.monthlyPayment}
-                onChange={e => setFormData({ ...formData, monthlyPayment: e.target.value })}
+                onChange={e => updateField('monthlyPayment', e.target.value)}
                 placeholder="원"
                 min="0"
                 required
@@ -187,7 +179,7 @@ export function AddLoanForm() {
               name="maturityDate"
               type="date"
               value={formData.maturityDate}
-              onChange={e => setFormData({ ...formData, maturityDate: e.target.value })}
+              onChange={e => updateField('maturityDate', e.target.value)}
               required
             />
           </div>
@@ -200,20 +192,13 @@ export function AddLoanForm() {
               id="purpose"
               name="purpose"
               value={formData.purpose}
-              onChange={e => setFormData({ ...formData, purpose: e.target.value })}
+              onChange={e => updateField('purpose', e.target.value)}
               placeholder="예: 주택구매, 사업자금 등"
               required
             />
           </div>
-
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              취소
-            </Button>
-            <Button type="submit">추가</Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </>
+      )}
+    </BaseModalForm>
   )
 }
