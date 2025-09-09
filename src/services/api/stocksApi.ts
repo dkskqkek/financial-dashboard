@@ -20,7 +20,7 @@ export class StocksApi {
       console.log(`🔍 백엔드를 통한 주식 검색 요청: ${symbol}`)
 
       const response = await httpClient.request<{ success: boolean; data?: any; error?: string }>(
-        `/stock/search/${encodeURIComponent(symbol)}`
+        `/stock/search?query=${encodeURIComponent(symbol)}`
       )
 
       if (response.success && response.data) {
