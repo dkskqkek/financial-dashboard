@@ -25,14 +25,14 @@ const queryClient = new QueryClient({
 
 function App() {
   useEffect(() => {
-    // 🛡️ 불멸 백업 시스템 최우선 활성화
-    setupIndestructibleBackup()
+    // 🛡️ 백업 시스템 임시 비활성화 (무한 새로고침 문제 해결)
+    // setupIndestructibleBackup()
 
     // 기존 백업 시스템도 유지 (추가 보안)
-    setupAutoBackup()
-    setupDailyBackupScheduler()
+    // setupAutoBackup()
+    // setupDailyBackupScheduler()
 
-    console.log('🔒 모든 백업 시스템 활성화 완료')
+    console.log('🔒 백업 시스템 임시 비활성화됨')
   }, [])
 
   return (
