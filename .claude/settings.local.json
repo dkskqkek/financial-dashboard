@@ -69,7 +69,8 @@
       "WebFetch(domain:personal-dashboard-app-psi.vercel.app)",
       "Bash(timeout:*)",
       "Bash(cat:*)",
-      "Bash(scoop install:*)"
+      "Bash(scoop install:*)",
+      "Read(//c/Users/gamja/Pictures/Screenshots/**)"
     ],
     "deny": [],
     "ask": []
