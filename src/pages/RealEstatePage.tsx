@@ -3,12 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Plus, Building, Home, CreditCard, TrendingUp, Receipt, Edit, Trash2 } from 'lucide-react'
+import { Building, Home, CreditCard, TrendingUp, Receipt, Edit, Trash2 } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { AddRealEstateForm } from '@/components/forms/AddRealEstateForm'
 import { AddLoanForm } from '@/components/forms/AddLoanForm'
 import { AddLoanPaymentForm } from '@/components/forms/AddLoanPaymentForm'
 import { useAppStore } from '@/stores'
+import { PageLayout, StatsGrid, ContentSection } from '@/components/common/PageLayout'
 
 export function RealEstatePage() {
   const { realEstate, loans, deleteRealEstate, deleteLoan } = useAppStore()
@@ -17,20 +18,19 @@ export function RealEstatePage() {
   const netRealEstateValue = totalRealEstateValue - totalLoanBalance
 
   return (
-    <div className="mobile-container space-y-3 sm:space-y-4 lg:space-y-6">
-      <div className="flex flex-col space-y-2 sm:space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-        <div className="space-y-1">
-          <h1 className="mobile-title">부동산 & 대출</h1>
-          <p className="mobile-subtitle mobile-text-wrap">자산과 대출 관리</p>
-        </div>
+    <PageLayout
+      title="부동산 & 대출"
+      description="자산과 대출 관리"
+      headerAction={
         <div className="flex space-x-2">
           <AddLoanPaymentForm />
           <AddLoanForm />
           <AddRealEstateForm />
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      }
+      containerType="mobile"
+    >
+      <StatsGrid columns={4}>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">부동산 가치</CardTitle>
@@ -72,9 +72,10 @@ export function RealEstatePage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </StatsGrid>
 
-      <Card>
+      <ContentSection>
+        <Card>
         <CardHeader>
           <CardTitle>부동산 목록</CardTitle>
         </CardHeader>
@@ -242,7 +243,8 @@ export function RealEstatePage() {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </ContentSection>
+    </PageLayout>
   )
 }
