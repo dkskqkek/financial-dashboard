@@ -10,26 +10,42 @@ interface MarketOverviewProps {
 }
 
 export function MarketOverview({ marketData }: MarketOverviewProps) {
+  // 데이터 검증 및 기본값 설정
+  if (!marketData || !marketData.kospi || !marketData.sp500 || !marketData.usdKrw) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>시장 현황</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center text-muted-foreground">
+            시장 데이터를 불러오는 중...
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const markets = [
     {
       name: 'KOSPI',
-      value: marketData.kospi.value,
-      change: marketData.kospi.change,
-      changePercent: marketData.kospi.changePercent,
+      value: marketData.kospi.value || 0,
+      change: marketData.kospi.change || 0,
+      changePercent: marketData.kospi.changePercent || 0,
       description: '한국 종합주가지수',
     },
     {
       name: 'S&P 500',
-      value: marketData.sp500.value,
-      change: marketData.sp500.change,
-      changePercent: marketData.sp500.changePercent,
+      value: marketData.sp500.value || 0,
+      change: marketData.sp500.change || 0,
+      changePercent: marketData.sp500.changePercent || 0,
       description: '미국 대형주 지수',
     },
     {
       name: 'USD/KRW',
-      value: marketData.usdKrw.value,
-      change: marketData.usdKrw.change,
-      changePercent: marketData.usdKrw.changePercent,
+      value: marketData.usdKrw.value || 0,
+      change: marketData.usdKrw.change || 0,
+      changePercent: marketData.usdKrw.changePercent || 0,
       description: '달러-원 환율',
       isExchangeRate: true,
     },

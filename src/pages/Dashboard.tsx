@@ -13,7 +13,7 @@ import {
   SafeLazyWrapper,
   ChartSkeleton,
 } from '@/components/common/LazyComponents'
-import { setupAutoBackup } from '@/utils/dataBackup'
+// import { setupAutoBackup } from '@/utils/dataBackup' // 임시 비활성화
 
 export function Dashboard() {
   // Custom hooks for data and logic
@@ -28,10 +28,10 @@ export function Dashboard() {
     handleRangeChange,
   } = useMarketData()
 
-  // Setup auto backup once
-  React.useEffect(() => {
-    setupAutoBackup()
-  }, [])
+  // Setup auto backup once - 임시 비활성화
+  // React.useEffect(() => {
+  //   setupAutoBackup()
+  // }, [])
 
   // Combined loading state
   const isLoading = isMetricsLoading || isMarketLoading
