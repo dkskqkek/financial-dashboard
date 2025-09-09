@@ -45,9 +45,21 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { query } = req.query
+  // 두 가지 방식 지원:
+  // 1. 쿼리 파라미터: /api/stock/search?query=GOOGL
+  // 2. 경로 파라미터: /api/stock/search/GOOGL
+  let symbol = req.query.query
 
-  if (!query) {
+  if (!symbol) {
+    // 경로 파라미터에서 추출 시도
+    const urlParts = req.url.split('/')
+    const searchIndex = urlParts.indexOf('search')
+    if (searchIndex >= 0 && searchIndex < urlParts.length - 1) {
+      symbol = urlParts[searchIndex + 1].split('?')[0] // 쿼리 스트링 제거
+    }
+  }
+
+  if (!symbol || symbol.trim().length === 0) {
     return res.status(400).json({ 
       success: false, 
       error: '검색할 주식 심볼을 입력해주세요' 
@@ -55,7 +67,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const symbol = query.trim().toUpperCase()
+    symbol = symbol.trim().toUpperCase()
+    console.log(`🔍 주식 검색 요청: ${symbol} (URL: ${req.url})`)
     
     // 한국 주식 (6자리 숫자)
     if (/^\d{6}$/.test(symbol)) {
