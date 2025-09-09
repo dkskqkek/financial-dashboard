@@ -80,10 +80,10 @@ export default defineConfig({
           recharts: ['recharts'],
           ui: ['lucide-react']
         },
-        // 캐시 버스팅을 위한 파일명에 해시 추가
-        entryFileNames: 'assets/[name]-[hash].js',
-        chunkFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
+        // 캐시 버스팅을 위한 파일명에 해시 추가 + 타임스탬프
+        entryFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
+        chunkFileNames: `assets/[name]-[hash]-${Date.now()}.js`,
+        assetFileNames: `assets/[name]-[hash]-${Date.now()}.[ext]`
       }
     },
     chunkSizeWarningLimit: 1000,
