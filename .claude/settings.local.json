@@ -65,7 +65,8 @@
       "Bash(npm run type-check:*)",
       "Bash(tree:*)",
       "Bash(mkdir:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "WebFetch(domain:personal-dashboard-app-psi.vercel.app)"
     ],
     "deny": [],
     "ask": []
