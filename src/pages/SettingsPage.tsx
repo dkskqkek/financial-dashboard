@@ -8,6 +8,7 @@ import { FileUpload } from '@/components/ui/file-upload'
 import { BackupManager } from '@/components/ui/BackupManager'
 import { useAppStore } from '@/stores'
 import { Settings, User, Bell, Shield, Database, Download, Upload, Trash2 } from 'lucide-react'
+import { UI_TEXT, UI_ICON_SIZES } from '@/constants/ui'
 
 export function SettingsPage() {
   const { user, isDarkMode, toggleDarkMode, setFinancialData, addTransaction, addCashAccount } = useAppStore()
@@ -58,7 +59,7 @@ export function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <User className="h-4 w-4 mr-2" />
+              <User className={`${UI_ICON_SIZES.SM} mr-2`} />
               사용자 정보
             </CardTitle>
           </CardHeader>
@@ -94,7 +95,7 @@ export function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Settings className="h-4 w-4 mr-2" />앱 설정
+              <Settings className={`${UI_ICON_SIZES.SM} mr-2`} />앱 설정
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -130,7 +131,7 @@ export function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Bell className="h-4 w-4 mr-2" />
+              <Bell className={`${UI_ICON_SIZES.SM} mr-2`} />
               알림 설정
             </CardTitle>
           </CardHeader>
@@ -169,7 +170,7 @@ export function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Shield className="h-4 w-4 mr-2" />
+              <Shield className={`${UI_ICON_SIZES.SM} mr-2`} />
               보안
             </CardTitle>
           </CardHeader>
@@ -205,7 +206,7 @@ export function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <Database className="h-4 w-4 mr-2" />
+              <Database className={`${UI_ICON_SIZES.SM} mr-2`} />
               데이터 관리
             </CardTitle>
           </CardHeader>
@@ -217,11 +218,11 @@ export function SettingsPage() {
                 alert('데이터 내보내기 기능은 준비 중입니다.')
               }}
             >
-              <Download className="h-4 w-4 mr-2" />
+              <Download className={`${UI_ICON_SIZES.SM} mr-2`} />
               데이터 내보내기 (Excel)
             </Button>
             <Button variant="outline" className="w-full" onClick={() => setShowUpload(!showUpload)}>
-              <Upload className="h-4 w-4 mr-2" />
+              <Upload className={`${UI_ICON_SIZES.SM} mr-2`} />
               금융 데이터 가져오기
             </Button>
             <BackupManager />
@@ -321,7 +322,7 @@ export function SettingsPage() {
             </div>
 
             <Button variant="destructive" className="w-full opacity-50 cursor-not-allowed" disabled>
-              <Trash2 className="h-4 w-4 mr-2" />
+              <Trash2 className={`${UI_ICON_SIZES.SM} mr-2`} />
               데이터 삭제 불가능 (불멸 보호)
             </Button>
           </CardContent>

@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from 'react'
+import React, { ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -8,6 +8,8 @@ import {
   DialogDescription,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { UI_TEXT, UI_STYLES } from '@/constants/ui'
+import { useFormState, useModal } from '@/hooks'
 
 export interface BaseModalFormProps<T> {
   title: string
@@ -33,17 +35,19 @@ export function BaseModalForm<T extends Record<string, any>>({
   initialData,
   onSubmit,
   onReset,
-  submitLabel = '저장',
-  cancelLabel = '취소',
+  submitLabel = UI_TEXT.SAVE,
+  cancelLabel = UI_TEXT.CANCEL,
   isLoading = false,
   children,
 }: BaseModalFormProps<T>) {
-  const [open, setOpen] = useState(false)
-  const [formData, setFormData] = useState<T>(initialData)
-
-  const updateField = (field: keyof T, value: T[keyof T]) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+  const { isOpen, closeModal, setIsOpen } = useModal({
+    onClose: onReset
+  })
+  
+  const { formData, setFormData, updateField, resetForm } = useFormState({
+    initialData,
+    onReset
+  })
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,33 +60,32 @@ export function BaseModalForm<T extends Record<string, any>>({
   }
 
   const handleClose = () => {
-    setOpen(false)
-    setFormData(initialData)
-    onReset?.()
+    closeModal()
+    resetForm()
   }
 
   return (
-    <Dialog open={open} onOpenChange={(newOpen) => {
+    <Dialog open={isOpen} onOpenChange={(newOpen) => {
       if (!newOpen) {
         handleClose()
       } else {
-        setOpen(newOpen)
+        setIsOpen(newOpen)
       }
     }}>
       <DialogTrigger asChild>
         {triggerButton}
       </DialogTrigger>
       
-      <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-auto">
+      <DialogContent className={`${UI_STYLES.MODAL_MD} max-h-[80vh] overflow-auto`}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className={UI_STYLES.FORM_SPACING}>
           {children({ formData, setFormData, updateField })}
           
-          <div className="flex justify-end space-x-2 pt-4">
+          <div className={UI_STYLES.BUTTON_GROUP_END}>
             <Button 
               type="button" 
               variant="outline" 
@@ -95,7 +98,7 @@ export function BaseModalForm<T extends Record<string, any>>({
               type="submit"
               disabled={isLoading}
             >
-              {isLoading ? '저장 중...' : submitLabel}
+              {isLoading ? UI_TEXT.SAVING : submitLabel}
             </Button>
           </div>
         </form>

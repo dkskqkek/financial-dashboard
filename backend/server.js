@@ -10,6 +10,7 @@ import * as cheerio from 'cheerio'
 dotenv.config()
 
 const app = express()
+// Cloud Run에서는 PORT=8080을 사용, 로컬에서는 3007
 const PORT = process.env.PORT || 3007
 
 // 네트워크 인터페이스 IP 자동 감지
@@ -955,8 +956,9 @@ app.get('/api/health', (req, res) => {
   })
 })
 
-// 서버 시작
-app.listen(PORT, '0.0.0.0', () => {
+// 서버 시작 (Cloud Run 호환)
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '0.0.0.0'
+app.listen(PORT, HOST, () => {
   const localIPs = getLocalIPs()
   console.log(`🚀 Stock API Backend Server running on port ${PORT}`)
   console.log(`📍 Local access: http://localhost:${PORT}/api/health`)

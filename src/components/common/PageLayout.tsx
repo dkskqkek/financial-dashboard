@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react'
+import { UI_STYLES } from '@/constants/ui'
 
 export interface PageLayoutProps {
   title: string
@@ -18,7 +19,7 @@ export function PageLayout({
   containerType = 'mobile'
 }: PageLayoutProps) {
   const containerClass = containerType === 'mobile' 
-    ? 'mobile-container space-y-3 sm:space-y-4 lg:space-y-6'
+    ? `mobile-container ${UI_STYLES.SECTION_SPACING}`
     : 'space-y-6 p-6'
 
   return (
@@ -65,9 +66,9 @@ export function StatsGrid({
   className = '' 
 }: StatsGridProps) {
   const gridClass = {
-    2: 'grid-cols-1 md:grid-cols-2',
-    3: 'grid-cols-1 md:grid-cols-3', 
-    4: 'grid-cols-1 md:grid-cols-4'
+    2: UI_STYLES.GRID_2,
+    3: UI_STYLES.GRID_3, 
+    4: UI_STYLES.GRID_4
   }[columns]
 
   return (
@@ -85,7 +86,7 @@ export interface ContentSectionProps {
 
 export function ContentSection({ children, className = '' }: ContentSectionProps) {
   return (
-    <div className={`space-y-4 sm:space-y-6 ${className}`}>
+    <div className={`${UI_STYLES.CARD_SPACING} ${className}`}>
       {children}
     </div>
   )

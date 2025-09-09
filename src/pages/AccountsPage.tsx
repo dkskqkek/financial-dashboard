@@ -16,6 +16,7 @@ import {
   RefreshCw,
   PieChart as PieChartIcon,
 } from 'lucide-react'
+import { UI_TEXT, UI_ICON_SIZES } from '@/constants/ui'
 import { AddCashAccountForm } from '@/components/forms/AddCashAccountForm'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import type { CashAccount, Transaction } from '@/types'
@@ -93,7 +94,7 @@ export function AccountsPage() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Building2 className="h-5 w-5 text-muted-foreground" />
+              <Building2 className={`${UI_ICON_SIZES.MD} text-muted-foreground`} />
               <div>
                 <CardTitle className="text-lg">{account.bankName}</CardTitle>
                 <p className="text-sm text-muted-foreground">{account.accountType}</p>
@@ -141,7 +142,7 @@ export function AccountsPage() {
 
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" onClick={() => setSelectedAccount(account.id)} className="flex-1">
-              <ArrowRightLeft className="h-4 w-4 mr-1" />
+              <ArrowRightLeft className={`${UI_ICON_SIZES.SM} mr-1`} />
               이체
             </Button>
             <Button variant="destructive" size="sm" onClick={() => deleteCashAccount(account.id)}>
@@ -163,7 +164,7 @@ export function AccountsPage() {
         </div>
         <div className="flex flex-wrap gap-2 sm:gap-3">
           <Button variant="outline" size="sm" onClick={() => setShowBalances(!showBalances)} className="mobile-button">
-            {showBalances ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+            {showBalances ? <EyeOff className={UI_ICON_SIZES.XS} /> : <Eye className={UI_ICON_SIZES.XS} />}
             <span className="ml-1 mobile-hide">잔액 {showBalances ? '숨김' : '표시'}</span>
           </Button>
           <AddCashAccountForm />
@@ -174,7 +175,7 @@ export function AccountsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <Wallet className="h-5 w-5 mr-2" />
+            <Wallet className={`${UI_ICON_SIZES.MD} mr-2`} />
             전체 현금 자산
           </CardTitle>
         </CardHeader>
@@ -214,11 +215,11 @@ export function AccountsPage() {
       <Tabs value={viewMode} onValueChange={value => setViewMode(value as any)}>
         <TabsList>
           <TabsTrigger value="unified" className="flex items-center">
-            <PieChartIcon className="h-4 w-4 mr-2" />
+            <PieChartIcon className={`${UI_ICON_SIZES.SM} mr-2`} />
             통합 보기
           </TabsTrigger>
           <TabsTrigger value="separate" className="flex items-center">
-            <Building2 className="h-4 w-4 mr-2" />
+            <Building2 className={`${UI_ICON_SIZES.SM} mr-2`} />
             계좌별 보기
           </TabsTrigger>
         </TabsList>
@@ -236,7 +237,7 @@ export function AccountsPage() {
             <Card key={bankName}>
               <CardHeader>
                 <CardTitle className="flex items-center">
-                  <Building2 className="h-5 w-5 mr-2" />
+                  <Building2 className={`${UI_ICON_SIZES.MD} mr-2`} />
                   {bankName} ({accounts.length}개 계좌)
                 </CardTitle>
               </CardHeader>
@@ -255,7 +256,7 @@ export function AccountsPage() {
       {cashAccounts.length === 0 && (
         <Card>
           <CardContent className="text-center py-12">
-            <Wallet className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <Wallet className={`h-12 w-12 text-muted-foreground mx-auto mb-4`} />
             <h3 className="text-lg font-medium mb-2">계좌가 없습니다</h3>
             <p className="text-muted-foreground mb-4">첫 번째 계좌를 추가하여 자산 관리를 시작하세요</p>
             <AddCashAccountForm />
