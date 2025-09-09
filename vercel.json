@@ -1,6 +1,9 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "rm -rf dist && rm -rf node_modules/.vite && npm run build",
   "outputDirectory": "dist",
+  "env": {
+    "FORCE_BUILD": "true"
+  },
   "headers": [
     {
       "source": "/(.*)",

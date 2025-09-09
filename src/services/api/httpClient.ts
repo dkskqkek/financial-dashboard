@@ -10,7 +10,7 @@ export class HttpClient {
     const timestamp = Date.now()
     const random = Math.random().toString(36).substring(7)
     const separator = endpoint.includes('?') ? '&' : '?'
-    const endpointWithCache = `${endpoint}${separator}_t=${timestamp}&_cache=bust&_v=1.0.1&_r=${random}`
+    const endpointWithCache = `${endpoint}${separator}_t=${timestamp}&_cache=bust&_v=1.0.3&_r=${random}&_force=${Date.now()}`
     const url = `${API_CONFIG.baseUrl}${endpointWithCache}`
 
     console.log(`🌐 API 요청 (캐시 우회): ${url}`)
