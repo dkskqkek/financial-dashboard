@@ -208,7 +208,7 @@ export function RealEstatePage() {
                     <TableCell className="text-right currency">{formatCurrency(item.monthlyPayment)}</TableCell>
                     <TableCell>{formatDate(item.maturityDate)}</TableCell>
                     <TableCell className="text-center">
-                      <AddLoanPaymentForm selectedLoanId={item.id} />
+                      <AddLoanPaymentForm />
                     </TableCell>
                     <TableCell className="text-center">
                       <div className="flex justify-center space-x-1">

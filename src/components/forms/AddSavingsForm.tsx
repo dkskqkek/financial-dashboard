@@ -1,90 +1,102 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-} from '@/components/ui/dialog'
+import { BaseModalForm } from '@/components/common/BaseModalForm'
 import { useAppStore } from '@/stores'
 import { generateId } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 import type { Savings } from '@/types'
 
+interface SavingsFormData {
+  bankName: string
+  productName: string
+  principal: string
+  interestRate: string
+  maturityDate: string
+  type: 'savings' | 'deposit' | 'cma'
+}
+
 export function AddSavingsForm() {
   const { addSavings } = useAppStore()
-  const [open, setOpen] = useState(false)
-  const [formData, setFormData] = useState({
+  
+  const initialData: SavingsFormData = {
     bankName: '',
     productName: '',
     principal: '',
     interestRate: '',
     maturityDate: '',
-    type: 'savings' as 'savings' | 'deposit' | 'cma',
-  })
+    type: 'savings',
+  }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    const principal = Number(formData.principal)
-    const rate = Number(formData.interestRate) / 100
-    const maturityDate = new Date(formData.maturityDate)
-    const startDate = new Date()
-    const monthsDiff =
-      (maturityDate.getFullYear() - startDate.getFullYear()) * 12 + (maturityDate.getMonth() - startDate.getMonth())
-
-    // 단순 복리 계산
-    const currentValue = principal * Math.pow(1 + rate / 12, monthsDiff)
-
-    const newSaving: Savings = {
+  const handleSubmit = (formData: SavingsFormData) => {
+    const newSavings: Savings = {
       id: generateId(),
       bankName: formData.bankName,
       productName: formData.productName,
-      principal,
+      principal: Number(formData.principal),
       interestRate: Number(formData.interestRate),
       maturityDate: formData.maturityDate,
-      currentValue: Math.round(currentValue),
+      currentValue: Number(formData.principal), // 초기값은 원금과 동일
       type: formData.type,
     }
 
-    addSavings(newSaving)
-    setOpen(false)
-    setFormData({
-      bankName: '',
-      productName: '',
-      principal: '',
-      interestRate: '',
-      maturityDate: '',
-      type: 'savings',
-    })
+    addSavings(newSavings)
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
+    <BaseModalForm
+      title="예적금 추가"
+      description="정기예금, 적금, CMA 등의 예적금 상품을 추가하세요."
+      triggerButton={
+        <Button variant="outline">
           <Plus className="h-4 w-4 mr-2" />
-          상품 추가
+          예적금 추가
         </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>예적금 상품 추가</DialogTitle>
-          <DialogDescription>예금, 적금, CMA 등의 금융 상품 정보를 추가하세요.</DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      }
+      initialData={initialData}
+      onSubmit={handleSubmit}
+    >
+      {({ formData, updateField }) => (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="bankName" className="text-sm font-medium">
+                은행명
+              </label>
+              <Input
+                id="bankName"
+                name="bankName"
+                value={formData.bankName}
+                onChange={e => updateField('bankName', e.target.value)}
+                placeholder="예: 국민은행"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="productName" className="text-sm font-medium">
+                상품명
+              </label>
+              <Input
+                id="productName"
+                name="productName"
+                value={formData.productName}
+                onChange={e => updateField('productName', e.target.value)}
+                placeholder="예: KB정기예금"
+                required
+              />
+            </div>
+          </div>
+
           <div>
             <label htmlFor="savingsType" className="text-sm font-medium">
-              상품 구분
+              상품 종류
             </label>
             <select
               id="savingsType"
               name="savingsType"
               value={formData.type}
-              onChange={e => setFormData({ ...formData, type: e.target.value as any })}
+              onChange={e => updateField('type', e.target.value as SavingsFormData['type'])}
               className="w-full mt-1 px-3 py-2 border rounded-md"
               required
             >
@@ -92,34 +104,6 @@ export function AddSavingsForm() {
               <option value="deposit">정기예금</option>
               <option value="cma">CMA</option>
             </select>
-          </div>
-
-          <div>
-            <label htmlFor="bankName" className="text-sm font-medium">
-              은행/기관명
-            </label>
-            <Input
-              id="bankName"
-              name="bankName"
-              value={formData.bankName}
-              onChange={e => setFormData({ ...formData, bankName: e.target.value })}
-              placeholder="은행명을 입력하세요"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="productName" className="text-sm font-medium">
-              상품명
-            </label>
-            <Input
-              id="productName"
-              name="productName"
-              value={formData.productName}
-              onChange={e => setFormData({ ...formData, productName: e.target.value })}
-              placeholder="상품명을 입력하세요"
-              required
-            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -132,7 +116,7 @@ export function AddSavingsForm() {
                 name="principal"
                 type="number"
                 value={formData.principal}
-                onChange={e => setFormData({ ...formData, principal: e.target.value })}
+                onChange={e => updateField('principal', e.target.value)}
                 placeholder="원"
                 min="0"
                 required
@@ -140,16 +124,16 @@ export function AddSavingsForm() {
             </div>
 
             <div>
-              <label htmlFor="savingsInterestRate" className="text-sm font-medium">
+              <label htmlFor="interestRate" className="text-sm font-medium">
                 금리 (%)
               </label>
               <Input
-                id="savingsInterestRate"
-                name="savingsInterestRate"
+                id="interestRate"
+                name="interestRate"
                 type="number"
                 value={formData.interestRate}
-                onChange={e => setFormData({ ...formData, interestRate: e.target.value })}
-                placeholder="3.5"
+                onChange={e => updateField('interestRate', e.target.value)}
+                placeholder="3.2"
                 min="0"
                 max="100"
                 step="0.01"
@@ -159,27 +143,20 @@ export function AddSavingsForm() {
           </div>
 
           <div>
-            <label htmlFor="savingsMaturityDate" className="text-sm font-medium">
+            <label htmlFor="maturityDate" className="text-sm font-medium">
               만기일
             </label>
             <Input
-              id="savingsMaturityDate"
-              name="savingsMaturityDate"
+              id="maturityDate"
+              name="maturityDate"
               type="date"
               value={formData.maturityDate}
-              onChange={e => setFormData({ ...formData, maturityDate: e.target.value })}
+              onChange={e => updateField('maturityDate', e.target.value)}
               required
             />
           </div>
-
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              취소
-            </Button>
-            <Button type="submit">추가</Button>
-          </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </>
+      )}
+    </BaseModalForm>
   )
 }
